@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Pressable, Text, Platform } from "react-native";
-import { Tabs } from "expo-router";
+import { Tabs, router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { cssInterop } from "nativewind";
+import { useAuth } from "../../src/hooks/useAuth";
 
 // Enable className on LinearGradient
 cssInterop(LinearGradient, { className: "style" });
@@ -106,7 +107,19 @@ const CustomTabBar = ({ state, navigation }) => {
   );
 };
 
-const _layout = () => {
+const TabsLayout = () => {
+  const { session, loading } = useAuth();
+
+  useEffect(() => {
+    if (!loading && !session) {
+      router.replace("/");
+    }
+  }, [loading, session]);
+
+  if (loading || !session) {
+    return null;
+  }
+
   return (
     <Tabs
       screenOptions={{ headerShown: false, tabBarStyle: { display: "none" } }}
@@ -120,4 +133,4 @@ const _layout = () => {
   );
 };
 
-export default _layout;
+export default TabsLayout;
