@@ -17,6 +17,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { signUpWithEmail } from "../../src/services/authService";
+import { suppressAuthRedirect } from "../../src/lib/authRedirectLock";
+import { safeBack } from "../../src/lib/safeBack";
 
 const Signup = () => {
   const [username, setUsername] = useState("");
@@ -91,16 +93,15 @@ const Signup = () => {
 
     lastAttemptTime.current = now;
     setLoading(true);
+    suppressAuthRedirect(true);
 
     try {
       await signUpWithEmail(email.trim(), password, username.trim());
 
-      // Form clear
       setUsername("");
       setEmail("");
       setPassword("");
 
-      // ✅ Direct Login Page (No Alert)
       router.replace("/auth/login");
     } catch (e) {
       const errorMessage = e instanceof Error ? e.message : "Try again";
@@ -134,6 +135,7 @@ const Signup = () => {
       }
     } finally {
       setLoading(false);
+      suppressAuthRedirect(false);
     }
   };
 
@@ -194,7 +196,7 @@ const Signup = () => {
           >
             <View style={{ padding: 24, paddingTop: 8 }}>
               <Pressable
-                onPress={() => router.back()}
+                onPress={() => safeBack("/")}
                 hitSlop={12}
                 style={{
                   width: 40,

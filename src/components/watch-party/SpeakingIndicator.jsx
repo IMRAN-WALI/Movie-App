@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { Animated, Easing, View } from "react-native";
 
-const SpeakingIndicator = ({ active }: { active: boolean }) => {
+const SpeakingIndicator = ({ active }) => {
   const scale = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -23,7 +23,7 @@ const SpeakingIndicator = ({ active }: { active: boolean }) => {
           easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
         }),
-      ])
+      ]),
     );
     loop.start();
     return () => loop.stop();

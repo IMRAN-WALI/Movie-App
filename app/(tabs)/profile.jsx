@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { View, Text, Pressable, ActivityIndicator, Alert } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
@@ -48,15 +49,8 @@ const Profile = () => {
         style: "destructive",
         onPress: async () => {
           try {
-            setLoading(true); // Show loader during logout
             await signOut();
-
-            // Important: Small delay to let Supabase clear session properly
-            setTimeout(() => {
-              router.replace("/auth/login");
-            }, 300);
           } catch (error) {
-            setLoading(false);
             Alert.alert("Error", "Could not sign out. Please try again.");
           }
         },

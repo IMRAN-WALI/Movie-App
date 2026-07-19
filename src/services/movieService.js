@@ -5,7 +5,7 @@ export async function searchMovies(query) {
 
   const { data, error } = await supabase
     .from("movies")
-    .select("id, title, poster_url, release_year, genres")
+    .select("id, title, poster_url, release_date, genres")
     .ilike("title", `%${query.trim()}%`)
     .limit(24);
 

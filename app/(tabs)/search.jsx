@@ -1,17 +1,17 @@
+import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  TextInput,
+  ActivityIndicator,
   FlatList,
   Image,
   Pressable,
-  ActivityIndicator,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
 import { searchMovies } from "../../src/services/movieService";
 
 const Search = () => {
@@ -124,7 +124,7 @@ const Search = () => {
             style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
           >
             <Text style={{ color: "rgba(255,255,255,0.6)" }}>
-              No movies found for "{query}"
+              No movies found for {query}
             </Text>
           </View>
         )}
@@ -182,7 +182,9 @@ const Search = () => {
                       marginTop: 2,
                     }}
                   >
-                    {item.release_year}{" "}
+                    {item.release_date
+                      ? new Date(item.release_date).getFullYear()
+                      : ""}{" "}
                     {item.genres?.[0] ? `· ${item.genres[0]}` : ""}
                   </Text>
                 </View>

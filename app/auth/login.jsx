@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/no-unescaped-entities */
 import React, { useState } from "react";
 import {
@@ -20,6 +21,7 @@ import {
   signInWithEmail,
   resendConfirmationEmail,
 } from "../../src/services/authService";
+import { safeBack } from "../../src/lib/safeBack";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -36,7 +38,7 @@ const Login = () => {
     setLoading(true);
     try {
       await signInWithEmail(email.trim(), password);
-      // ✅ Login success - Home page
+      //  Home page
       router.replace("/(tabs)");
     } catch (e) {
       const errorMessage = e instanceof Error ? e.message : "Try again";
@@ -118,7 +120,7 @@ const Login = () => {
           >
             <View style={{ padding: 24, paddingTop: 8 }}>
               <Pressable
-                onPress={() => router.back()}
+                onPress={() => safeBack("/")}
                 hitSlop={12}
                 style={{
                   width: 40,

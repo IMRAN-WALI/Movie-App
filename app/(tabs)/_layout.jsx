@@ -1,10 +1,16 @@
-import React, { useEffect } from "react";
-import { View, Pressable, Text, Platform } from "react-native";
-import { Tabs, router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Tabs, router } from "expo-router";
 import { cssInterop } from "nativewind";
+import React, { useEffect } from "react";
+import {
+  ActivityIndicator,
+  Platform,
+  Pressable,
+  Text,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "../../src/hooks/useAuth";
 
 // Enable className on LinearGradient
@@ -112,12 +118,19 @@ const TabsLayout = () => {
 
   useEffect(() => {
     if (!loading && !session) {
-      router.replace("/");
+      router.replace("/auth/login");
     }
   }, [loading, session]);
 
   if (loading || !session) {
-    return null;
+    return (
+      <LinearGradient
+        colors={["#3730a3", "#4f46e5"]}
+        style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+      >
+        <ActivityIndicator color="white" size="large" />
+      </LinearGradient>
+    );
   }
 
   return (

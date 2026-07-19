@@ -1,14 +1,21 @@
-import React, { useState, useRef } from "react";
+import React, { useRef, useState } from "react";
 import {
-  View,
-  Text,
-  TextInput,
-  Pressable,
   FlatList,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
-import type { WatchPartyMessage } from "../../types/database.types";
+
+type WatchPartyMessage = {
+  id: string;
+  party_id: string;
+  user_id: string;
+  body: string;
+  created_at?: string;
+};
 
 interface Props {
   messages: WatchPartyMessage[];
@@ -17,7 +24,12 @@ interface Props {
   nameForUserId: (userId: string) => string;
 }
 
-const PartyChat = ({ messages, currentUserId, onSend, nameForUserId }: Props) => {
+const PartyChat = ({
+  messages,
+  currentUserId,
+  onSend,
+  nameForUserId,
+}: Props) => {
   const [draft, setDraft] = useState("");
   const listRef = useRef<FlatList<WatchPartyMessage>>(null);
 
@@ -26,7 +38,9 @@ const PartyChat = ({ messages, currentUserId, onSend, nameForUserId }: Props) =>
     if (!body) return;
     setDraft("");
     await onSend(body);
-    requestAnimationFrame(() => listRef.current?.scrollToEnd({ animated: true }));
+    requestAnimationFrame(() =>
+      listRef.current?.scrollToEnd({ animated: true }),
+    );
   };
 
   return (
@@ -38,7 +52,9 @@ const PartyChat = ({ messages, currentUserId, onSend, nameForUserId }: Props) =>
         ref={listRef}
         data={messages}
         keyExtractor={(item) => item.id}
-        onContentSizeChange={() => listRef.current?.scrollToEnd({ animated: false })}
+        onContentSizeChange={() =>
+          listRef.current?.scrollToEnd({ animated: false })
+        }
         contentContainerStyle={{ padding: 12, gap: 8 }}
         renderItem={({ item }) => {
           const mine = item.user_id === currentUserId;
@@ -54,7 +70,9 @@ const PartyChat = ({ messages, currentUserId, onSend, nameForUserId }: Props) =>
               }}
             >
               {!mine && (
-                <Text style={{ color: "#94a3b8", fontSize: 11, marginBottom: 2 }}>
+                <Text
+                  style={{ color: "#94a3b8", fontSize: 11, marginBottom: 2 }}
+                >
                   {nameForUserId(item.user_id)}
                 </Text>
               )}

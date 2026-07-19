@@ -4,12 +4,13 @@ import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useAuth } from "../src/hooks/useAuth";
+import { isAuthRedirectSuppressed } from "../src/lib/authRedirectLock";
 
 export default function Landing() {
   const { session, loading } = useAuth();
 
   useEffect(() => {
-    if (!loading && session) {
+    if (!loading && session && !isAuthRedirectSuppressed()) {
       router.replace("/(tabs)");
     }
   }, [loading, session]);

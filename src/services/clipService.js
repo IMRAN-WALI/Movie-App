@@ -4,7 +4,6 @@ import { invokeEdgeFunction, supabase } from "../lib/supabase";
 
 const SOURCE_BUCKET = "movie-sources";
 
-/** Creates the clip row and kicks off the async trim edge function. */
 export async function createClip(params) {
   const {
     data: { user },
@@ -23,7 +22,7 @@ export async function createClip(params) {
       source_video_url: params.sourceVideoUrl,
       start_seconds: params.startSeconds,
       end_seconds: params.endSeconds,
-      caption: params.caption ?? null,
+      title: params.caption ?? null,
       status: "processing",
     })
     .select()
@@ -38,12 +37,10 @@ export async function createClip(params) {
   return clip;
 }
 
-/** Uploads a locally-recorded/selected source video the user wants to clip from. */
 export async function uploadSourceVideo(localUri, userId) {
   const base64 = await FileSystem.readAsStringAsync(localUri, {
     encoding: "base64",
   });
-
   const path = `${userId}/${Date.now()}.mp4`;
 
   const { error } = await supabase.storage

@@ -151,7 +151,9 @@ const Saved = () => {
                     marginTop: 4,
                   }}
                 >
-                  {item.movie?.release_year}{" "}
+                  {item.movie?.release_date
+                    ? new Date(item.movie.release_date).getFullYear()
+                    : ""}{" "}
                   {item.movie?.genres?.[0] ? `· ${item.movie.genres[0]}` : ""}
                 </Text>
               </View>

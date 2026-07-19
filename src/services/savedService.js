@@ -9,7 +9,7 @@ export async function fetchSavedMovies() {
   const { data, error } = await supabase
     .from("saved_movies")
     .select(
-      "movie_id, created_at, movie:movies(id, title, poster_url, release_year, genres)",
+      "movie_id, created_at, movie:movies(id, title, poster_url, release_date, genres)",
     )
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });

@@ -34,6 +34,13 @@ export async function signUpWithEmail(email, password, username) {
       }
     }
 
+    // Confirm email OFF hai, isliye signUp() khud auto-login kar deta hai.
+    // Yahan turant sign out karte hain taaki landing page ka guard
+    // "/(tabs)" pe auto-jump na kare — user seedha login page pe jaye.
+    if (data.session) {
+      await supabase.auth.signOut();
+    }
+
     return data;
   } catch (error) {
     throw error;
