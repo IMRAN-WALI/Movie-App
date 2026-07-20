@@ -1,69 +1,138 @@
 import React from "react";
 import { FlatList, Image, Text, View } from "react-native";
 
-const TrendingList = ({ movies }) => {
+const CARD_COLOR = "#1E293B";
+const PRIMARY = "#818CF8";
+const SECONDARY = "#94A3B8";
+
+function MovieCard({ item, index }) {
+  const rating =
+    item.avg_rating !== null && item.avg_rating !== undefined
+      ? Number(item.avg_rating).toFixed(1)
+      : null;
+
+  return (
+    <View
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        backgroundColor: CARD_COLOR,
+        borderRadius: 14,
+        padding: 12,
+        marginBottom: 12,
+      }}
+    >
+      <Text
+        style={{
+          width: 30,
+          textAlign: "center",
+          color: PRIMARY,
+          fontSize: 20,
+          fontWeight: "bold",
+        }}
+      >
+        #{index + 1}
+      </Text>
+
+      {item.poster_url ? (
+        <Image
+          source={{ uri: item.poster_url }}
+          style={{
+            width: 60,
+            height: 90,
+            borderRadius: 10,
+            marginHorizontal: 12,
+            backgroundColor: "#334155",
+          }}
+          resizeMode="cover"
+        />
+      ) : (
+        <View
+          style={{
+            width: 60,
+            height: 90,
+            borderRadius: 10,
+            marginHorizontal: 12,
+            backgroundColor: "#334155",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ color: "#CBD5E1" }}>No Image</Text>
+        </View>
+      )}
+
+      <View style={{ flex: 1 }}>
+        <Text
+          numberOfLines={2}
+          style={{
+            color: "#FFFFFF",
+            fontSize: 16,
+            fontWeight: "700",
+          }}
+        >
+          {item.title}
+        </Text>
+
+        <Text
+          style={{
+            color: SECONDARY,
+            marginTop: 8,
+            fontSize: 13,
+          }}
+        >
+          👥 {item.watch_count} nearby watches
+        </Text>
+
+        {rating && (
+          <Text
+            style={{
+              color: "#FACC15",
+              marginTop: 4,
+              fontWeight: "600",
+            }}
+          >
+            ⭐ {rating}/10
+          </Text>
+        )}
+      </View>
+    </View>
+  );
+}
+
+export default function TrendingList({ movies }) {
+  if (!movies || movies.length === 0) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          padding: 30,
+        }}
+      >
+        <Text
+          style={{
+            color: "#94A3B8",
+            fontSize: 16,
+            textAlign: "center",
+          }}
+        >
+          No trending movies found nearby.
+        </Text>
+      </View>
+    );
+  }
+
   return (
     <FlatList
       data={movies}
-      keyExtractor={(item) => item.movie_id}
-      contentContainerStyle={{ padding: 16, gap: 12 }}
-      renderItem={({ item, index }) => (
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            backgroundColor: "#1e293b",
-            borderRadius: 14,
-            padding: 10,
-            gap: 12,
-          }}
-        >
-          <Text
-            style={{
-              color: "#818cf8",
-              fontWeight: "800",
-              fontSize: 18,
-              width: 24,
-            }}
-          >
-            {index + 1}
-          </Text>
-          {item.poster_url ? (
-            <Image
-              source={{ uri: item.poster_url }}
-              style={{
-                width: 48,
-                height: 72,
-                borderRadius: 8,
-                backgroundColor: "#334155",
-              }}
-            />
-          ) : (
-            <View
-              style={{
-                width: 48,
-                height: 72,
-                borderRadius: 8,
-                backgroundColor: "#334155",
-              }}
-            />
-          )}
-          <View style={{ flex: 1 }}>
-            <Text
-              style={{ color: "white", fontWeight: "600", fontSize: 15 }}
-              numberOfLines={2}
-            >
-              {item.title}
-            </Text>
-            <Text style={{ color: "#94a3b8", fontSize: 12, marginTop: 4 }}>
-              {item.watch_count} watches nearby
-              {item.avg_rating ? ` · ★ ${item.avg_rating.toFixed(1)}` : ""}
-            </Text>
-          </View>
-        </View>
-      )}
+      keyExtractor={(item) => String(item.movie_id)}
+      contentContainerStyle={{
+        padding: 16,
+      }}
+      showsVerticalScrollIndicator={false}
+      renderItem={({ item, index }) => <MovieCard item={item} index={index} />}
     />
   );
-};
-
-export default TrendingList;
+}

@@ -11,9 +11,21 @@ if (!supabaseUrl || !supabaseAnonKey) {
   );
 }
 
+// During Expo's web SSR/static-render pass, this code runs in a plain
+// Node.js process where `window` doesn't exist. AsyncStorage's web
+// implementation crashes if it's touched in that environment, so we
+// fall back to a harmless in-memory no-op storage there instead.
+const isServerEnvironment = typeof window === "undefined";
+
+const noopStorage = {
+  getItem: async () => null,
+  setItem: async () => {},
+  removeItem: async () => {},
+};
+
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    storage: AsyncStorage,
+    storage: isServerEnvironment ? noopStorage : AsyncStorage,
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: false,

@@ -15,23 +15,36 @@ export function useTrendingNearby() {
     setLoading(true);
     setError(null);
     setPermissionDenied(false);
+
     try {
+      // Capture & save current location
       const location = await captureAndStoreUserLocation();
+
       if (!location) {
         setPermissionDenied(true);
-        setLoading(false);
+        setMovies([]);
         return;
       }
+
       setCity(location.city);
+
+      // Fetch nearby trending movies
       const results = await fetchTrendingNearby(
         location.latitude,
         location.longitude,
       );
-      setMovies(results);
-    } catch (e) {
-      setError(
-        e instanceof Error ? e.message : "Failed to load trending movies",
-      );
+
+      if (Array.isArray(results)) {
+        setMovies(results);
+      } else {
+        setMovies([]);
+      }
+    } catch (err) {
+      console.error("Trending Nearby Error:", err);
+
+      setMovies([]);
+
+      setError(err?.message || "Failed to load trending movies.");
     } finally {
       setLoading(false);
     }
@@ -41,5 +54,12 @@ export function useTrendingNearby() {
     load();
   }, [load]);
 
-  return { movies, city, loading, error, permissionDenied, refresh: load };
+  return {
+    movies,
+    city,
+    loading,
+    error,
+    permissionDenied,
+    refresh: load,
+  };
 }
