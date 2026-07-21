@@ -1,5 +1,6 @@
 import React from "react";
-import { FlatList, Image, Text, View } from "react-native";
+import { Image, Text, View, Pressable } from "react-native";
+import { router } from "expo-router";
 
 const CARD_COLOR = "#1E293B";
 const PRIMARY = "#818CF8";
@@ -12,7 +13,13 @@ function MovieCard({ item, index }) {
       : null;
 
   return (
-    <View
+    <Pressable
+      onPress={() =>
+        router.push({
+          pathname: "/movies/[id]",
+          params: { id: item.movie_id },
+        })
+      }
       style={{
         flexDirection: "row",
         alignItems: "center",
@@ -96,7 +103,7 @@ function MovieCard({ item, index }) {
           </Text>
         )}
       </View>
-    </View>
+    </Pressable>
   );
 }
 
@@ -125,14 +132,14 @@ export default function TrendingList({ movies }) {
   }
 
   return (
-    <FlatList
-      data={movies}
-      keyExtractor={(item) => String(item.movie_id)}
-      contentContainerStyle={{
+    <View
+      style={{
         padding: 16,
       }}
-      showsVerticalScrollIndicator={false}
-      renderItem={({ item, index }) => <MovieCard item={item} index={index} />}
-    />
+    >
+      {movies.map((item, index) => (
+        <MovieCard key={item.movie_id} item={item} index={index} />
+      ))}
+    </View>
   );
 }

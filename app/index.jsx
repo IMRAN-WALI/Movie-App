@@ -1,9 +1,11 @@
-import React, { useEffect } from "react";
-import { View, Text, Image, Pressable, ActivityIndicator } from "react-native";
+import { AntDesign } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
+import React, { useEffect } from "react";
+import { ActivityIndicator, Image, Pressable, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../src/hooks/useAuth";
+import { signInWithGoogle } from "../src/lib/auth";
 import { isAuthRedirectSuppressed } from "../src/lib/authRedirectLock";
 
 export default function Landing() {
@@ -104,6 +106,80 @@ export default function Landing() {
           >
             <Text style={{ color: "white", fontWeight: "700", fontSize: 16 }}>
               Create Account
+            </Text>
+          </Pressable>
+
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginVertical: 20,
+            }}
+          >
+            <View
+              style={{
+                flex: 1,
+                height: 1,
+                backgroundColor: "rgba(255,255,255,0.25)",
+              }}
+            />
+
+            <Text
+              style={{
+                color: "rgba(255,255,255,0.7)",
+                marginHorizontal: 15,
+                fontWeight: "600",
+                letterSpacing: 1,
+              }}
+            >
+              OR
+            </Text>
+
+            <View
+              style={{
+                flex: 1,
+                height: 1,
+                backgroundColor: "rgba(255,255,255,0.25)",
+              }}
+            />
+          </View>
+
+          <Pressable
+            onPress={async () => {
+              try {
+                await signInWithGoogle();
+              } catch (err) {
+                console.log(err);
+              }
+            }}
+            style={{
+              backgroundColor: "#FFFFFF",
+              borderRadius: 16,
+              paddingVertical: 16,
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "row",
+              shadowColor: "#000",
+              shadowOpacity: 0.15,
+              shadowRadius: 8,
+              elevation: 4,
+            }}
+          >
+            <AntDesign
+              name="google"
+              size={22}
+              color="#4338ca"
+              style={{ marginRight: 10 }}
+            />
+
+            <Text
+              style={{
+                color: "#4338ca",
+                fontSize: 16,
+                fontWeight: "700",
+              }}
+            >
+              Continue with Google
             </Text>
           </Pressable>
         </View>

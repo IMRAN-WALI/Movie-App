@@ -1,6 +1,11 @@
+import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
 import React from "react";
 import {
   ActivityIndicator,
+  FlatList,
+  Image,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -8,193 +13,140 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-import TrendingList from "../../src/components/trending/TrendingList";
 import { useTrendingNearby } from "../../src/hooks/useTrendingNearby";
 
 export default function TrendingScreen() {
   const { movies, city, loading, error, permissionDenied, refresh } =
     useTrendingNearby();
 
-  return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        backgroundColor: "#0F172A",
-      }}
+  const handleMoviePress = (movie) => {
+    // Navigate to watch party lobby with movieId
+    router.push({
+      pathname: "/watch-party",
+      params: {
+        movieId: movie.movie_id.toString(),
+        movieTitle: movie.title,
+        posterUrl: movie.poster_url,
+        watchCount: movie.watch_count,
+        avgRating: movie.avg_rating,
+      },
+    });
+  };
+
+  const renderMovie = ({ item }) => (
+    <Pressable
+      onPress={() => handleMoviePress(item)}
+      className="flex-row items-center bg-white/10 rounded-2xl p-3 mb-3"
     >
-      <ScrollView
-        refreshControl={
-          <RefreshControl
-            refreshing={loading}
-            onRefresh={refresh}
-            tintColor="#FFFFFF"
-          />
-        }
-        contentContainerStyle={{
-          flexGrow: 1,
-        }}
-      >
-        {/* Header */}
-
-        <View
-          style={{
-            paddingHorizontal: 20,
-            paddingTop: 20,
-            paddingBottom: 10,
-          }}
-        >
-          <Text
-            style={{
-              color: "#FFFFFF",
-              fontSize: 28,
-              fontWeight: "800",
-            }}
-          >
-             Trending Near You
-          </Text>
-
-          {city ? (
-            <Text
-              style={{
-                color: "#94A3B8",
-                marginTop: 6,
-                fontSize: 15,
-              }}
-            >
-               {city}
-            </Text>
-          ) : null}
+      <Image
+        source={{ uri: item.poster_url }}
+        className="w-16 h-24 rounded-lg"
+        resizeMode="cover"
+      />
+      <View className="flex-1 ml-4">
+        <Text className="text-white text-lg font-bold">{item.title}</Text>
+        <Text className="text-white/70 text-sm">
+          👁️ {item.watch_count} views • ⭐ {item.avg_rating || 0}
+        </Text>
+        <View className="flex-row items-center mt-1">
+          <View className="bg-purple-500/20 px-2 py-0.5 rounded-full">
+            <Text className="text-purple-300 text-xs">🔥 Trending</Text>
+          </View>
         </View>
+      </View>
+      <View className="bg-blue-500/20 p-2 rounded-full">
+        <Ionicons name="play-circle" size={24} color="#60a5fa" />
+      </View>
+    </Pressable>
+  );
 
-        {/* Loading */}
+  if (loading) {
+    return (
+      <LinearGradient colors={["#181a3b", "#4f46e5"]} className="flex-1">
+        <SafeAreaView className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color="white" />
+          <Text className="text-white/70 mt-4">Loading trending movies...</Text>
+        </SafeAreaView>
+      </LinearGradient>
+    );
+  }
 
-        {loading && (
-          <View
-            style={{
-              flex: 1,
-              minHeight: 400,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
+  if (permissionDenied) {
+    return (
+      <LinearGradient colors={["#181a3b", "#4f46e5"]} className="flex-1">
+        <SafeAreaView className="flex-1 items-center justify-center px-6">
+          <Ionicons name="location-outline" size={60} color="white/30" />
+          <Text className="text-white text-xl font-bold mt-4 text-center">
+            Location Access Needed
+          </Text>
+          <Text className="text-white/50 text-center mt-2">
+            Please enable location to see trending movies near you
+          </Text>
+          <Pressable
+            onPress={refresh}
+            className="mt-6 bg-white/20 px-6 py-3 rounded-full"
           >
-            <ActivityIndicator size="large" color="#FFFFFF" />
+            <Text className="text-white font-bold">Try Again</Text>
+          </Pressable>
+        </SafeAreaView>
+      </LinearGradient>
+    );
+  }
 
-            <Text
-              style={{
-                color: "#94A3B8",
-                marginTop: 15,
-              }}
-            >
-              Finding movies near you...
-            </Text>
-          </View>
-        )}
-
-        {/* Permission */}
-
-        {!loading && permissionDenied && (
-          <View
-            style={{
-              flex: 1,
-              minHeight: 450,
-              justifyContent: "center",
-              alignItems: "center",
-              paddingHorizontal: 25,
-            }}
-          >
-            <Text
-              style={{
-                color: "#FFFFFF",
-                fontSize: 20,
-                fontWeight: "700",
-                textAlign: "center",
-              }}
-            >
-               Location Permission Required
-            </Text>
-
-            <Text
-              style={{
-                color: "#94A3B8",
-                textAlign: "center",
-                marginTop: 10,
-                lineHeight: 22,
-              }}
-            >
-              Please allow location permission to discover trending movies
-              around you.
-            </Text>
-
+  return (
+    <LinearGradient
+      colors={["#181a3b", "#4f46e5", "#60a5fa"]}
+      className="flex-1"
+    >
+      <SafeAreaView className="flex-1">
+        <View className="flex-1 px-4 pt-2">
+          {/* Header */}
+          <View className="flex-row items-center justify-between mb-4">
+            <View>
+              <Text className="text-white/70 text-sm">📍 Trending in</Text>
+              <Text className="text-white text-2xl font-bold">
+                {city || "Nearby"}
+              </Text>
+            </View>
             <Pressable
               onPress={refresh}
-              style={{
-                marginTop: 25,
-                backgroundColor: "#6366F1",
-                paddingHorizontal: 30,
-                paddingVertical: 14,
-                borderRadius: 14,
-              }}
+              className="bg-white/10 p-3 rounded-full"
             >
-              <Text
-                style={{
-                  color: "#FFFFFF",
-                  fontWeight: "700",
-                }}
-              >
-                Try Again
-              </Text>
+              <Ionicons name="refresh" size={20} color="white" />
             </Pressable>
           </View>
-        )}
 
-        {/* Error */}
-
-        {!loading && error && (
-          <View
-            style={{
-              padding: 25,
-            }}
-          >
-            <Text
-              style={{
-                color: "#EF4444",
-                textAlign: "center",
-                fontSize: 16,
-                marginBottom: 15,
-              }}
-            >
-              {error}
-            </Text>
-
-            <Pressable
-              onPress={refresh}
-              style={{
-                alignSelf: "center",
-                backgroundColor: "#6366F1",
-                paddingHorizontal: 25,
-                paddingVertical: 12,
-                borderRadius: 12,
-              }}
-            >
-              <Text
-                style={{
-                  color: "#FFFFFF",
-                  fontWeight: "700",
-                }}
-              >
-                Retry
-              </Text>
-            </Pressable>
-          </View>
-        )}
-
-        {/* Movies */}
-
-        {!loading && !permissionDenied && !error && (
-          <TrendingList movies={movies} />
-        )}
-      </ScrollView>
-    </SafeAreaView>
+          {/* Movies List */}
+          <FlatList
+            data={movies}
+            renderItem={renderMovie}
+            keyExtractor={(item) => item.movie_id.toString()}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 20 }}
+            refreshControl={
+              <RefreshControl
+                refreshing={loading}
+                onRefresh={refresh}
+                tintColor="#FFFFFF"
+              />
+            }
+            ListEmptyComponent={
+              <View className="items-center justify-center py-20">
+                <Ionicons name="film-outline" size={60} color="white/30" />
+                <Text className="text-white/50 text-center mt-4">
+                  No trending movies found nearby
+                </Text>
+                <Pressable
+                  onPress={refresh}
+                  className="mt-4 bg-white/10 px-6 py-2 rounded-full"
+                >
+                  <Text className="text-white">Refresh</Text>
+                </Pressable>
+              </View>
+            }
+          />
+        </View>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }

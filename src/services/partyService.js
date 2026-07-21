@@ -1,145 +1,136 @@
 import { supabase } from "../lib/supabase";
 
-function generateInviteCode() {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  let code = "";
-  for (let i = 0; i < 6; i++) {
-    code += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return code;
-}
-
 export async function createWatchParty(movieId) {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("Not authenticated");
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  const inviteCode = generateInviteCode();
-  const roomName = `party-${inviteCode.toLowerCase()}`;
+    if (!user) {
+      throw new Error("You must be logged in");
+    }
 
-  const { data: party, error } = await supabase
-    .from("watch_parties")
-    .insert({
-      host_id: user.id,
-      movie_id: movieId,
-      invite_code: inviteCode,
-      livekit_room_name: roomName,
-      status: "waiting",
-    })
-    .select()
-    .single();
+    console.log("👤 Creating party for user:", user.id);
+    console.log("🎬 Movie ID:", movieId);
 
-  if (error) throw error;
+    const inviteCode = generateInviteCode();
+    const roomName = `party_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
 
-  await supabase.from("watch_party_participants").insert({
-    party_id: party.id,
-    user_id: user.id,
-  });
+    // Create party
+    const { data: party, error: partyError } = await supabase
+      .from("watch_parties")
+      .insert({
+        movie_id: parseInt(movieId),
+        host_id: user.id,
+        status: "waiting",
+        invite_code: inviteCode,
+        livekit_room_name: roomName,
+      })
+      .select()
+      .single();
 
-  return party;
+    if (partyError) {
+      console.error("❌ Supabase insert error:", partyError);
+      throw partyError;
+    }
+
+    console.log("✅ Party created:", party);
+
+    // Add host as participant
+    const { error: participantError } = await supabase
+      .from("party_participants")
+      .insert({
+        party_id: party.id,
+        user_id: user.id,
+        is_muted: false,
+      });
+
+    if (participantError) {
+      console.error("❌ Error adding host as participant:", participantError);
+      // Don't throw, party already created
+    } else {
+      console.log("✅ Host added as participant");
+    }
+
+    return party;
+  } catch (error) {
+    console.error("❌ createWatchParty error:", error);
+    throw error;
+  }
 }
-
 export async function joinWatchParty(inviteCode) {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("Not authenticated");
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  const { data: party, error } = await supabase
-    .from("watch_parties")
-    .select("*")
-    .eq("invite_code", inviteCode.toUpperCase())
-    .single();
+    if (!user) {
+      throw new Error("You must be logged in");
+    }
 
-  if (error || !party) throw new Error("Party not found");
-  if (party.status === "ended") throw new Error("This party has ended");
+    console.log("🔍 Looking for party with code:", inviteCode);
 
-  const { error: joinError } = await supabase
-    .from("watch_party_participants")
-    .upsert(
-      { party_id: party.id, user_id: user.id, left_at: null },
-      { onConflict: "party_id,user_id" },
-    );
+    const { data: party, error: findError } = await supabase
+      .from("watch_parties")
+      .select("*")
+      .eq("invite_code", inviteCode)
+      .eq("status", "waiting")
+      .single();
 
-  if (joinError) throw joinError;
+    if (findError || !party) {
+      console.error("❌ Party not found:", findError);
+      throw new Error("Invalid or expired invite code");
+    }
 
-  return party;
+    console.log("✅ Party found:", party);
+
+    const { error: joinError } = await supabase
+      .from("party_participants")
+      .insert({
+        party_id: party.id,
+        user_id: user.id,
+      });
+
+    if (joinError) {
+      console.error("❌ Join error:", joinError);
+      throw joinError;
+    }
+
+    return party;
+  } catch (error) {
+    console.error("❌ joinWatchParty error:", error);
+    throw error;
+  }
 }
 
-export async function leaveWatchParty(partyId) {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("Not authenticated");
+export async function leaveWatchParty(sessionId) {
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  await supabase
-    .from("watch_party_participants")
-    .update({ left_at: new Date().toISOString() })
-    .eq("party_id", partyId)
-    .eq("user_id", user.id);
+    if (!user) {
+      throw new Error("You must be logged in");
+    }
+
+    const { error } = await supabase
+      .from("party_participants")
+      .delete()
+      .eq("party_id", sessionId)
+      .eq("user_id", user.id);
+
+    if (error) {
+      console.error("❌ Leave error:", error);
+      throw error;
+    }
+
+    console.log("✅ Left party");
+  } catch (error) {
+    console.error("❌ leaveWatchParty error:", error);
+    throw error;
+  }
 }
 
-export async function updatePlaybackState(partyId, status, positionSeconds) {
-  const { error } = await supabase
-    .from("watch_parties")
-    .update({
-      status,
-      playback_position_seconds: positionSeconds,
-      playback_updated_at: new Date().toISOString(),
-    })
-    .eq("id", partyId);
-
-  if (error) throw error;
-}
-
-export async function sendPartyMessage(partyId, body) {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("Not authenticated");
-
-  const { error } = await supabase.from("watch_party_messages").insert({
-    party_id: partyId,
-    user_id: user.id,
-    body,
-  });
-
-  if (error) throw error;
-}
-
-export async function fetchPartyMessages(partyId) {
-  const { data, error } = await supabase
-    .from("watch_party_messages")
-    .select("*")
-    .eq("party_id", partyId)
-    .order("created_at", { ascending: true })
-    .limit(200);
-
-  if (error) throw error;
-  return data;
-}
-
-export async function fetchPartyParticipants(partyId) {
-  const { data, error } = await supabase
-    .from("watch_party_participants")
-    .select("*")
-    .eq("party_id", partyId)
-    .is("left_at", null);
-
-  if (error) throw error;
-  return data;
-}
-
-export async function setMuted(partyId, isMuted) {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("Not authenticated");
-
-  await supabase
-    .from("watch_party_participants")
-    .update({ is_muted: isMuted })
-    .eq("party_id", partyId)
-    .eq("user_id", user.id);
+function generateInviteCode() {
+  return Math.random().toString(36).substring(2, 8).toUpperCase();
 }

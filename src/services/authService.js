@@ -1,4 +1,9 @@
 import { supabase } from "../lib/supabase";
+import * as WebBrowser from "expo-web-browser";
+import * as Linking from "expo-linking";
+import { makeRedirectUri } from "expo-auth-session";
+
+WebBrowser.maybeCompleteAuthSession();
 
 export async function signUpWithEmail(email, password, username) {
   try {
@@ -62,6 +67,46 @@ export async function signInWithEmail(email, password) {
         throw new Error("INVALID_CREDENTIALS");
       }
       throw error;
+    }
+
+    return data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function signInWithGoogle() {
+  try {
+    const redirectTo = makeRedirectUri({
+      scheme: "movieapp",
+    });
+
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo,
+        skipBrowserRedirect: false,
+      },
+    });
+
+    if (error) throw error;
+
+    if (data?.url) {
+      const result = await WebBrowser.openAuthSessionAsync(
+        data.url,
+        redirectTo,
+      );
+
+      if (result.type === "success") {
+        const url = result.url;
+
+        const { data: sessionData, error: sessionError } =
+          await supabase.auth.exchangeCodeForSession(url);
+
+        if (sessionError) throw sessionError;
+
+        return sessionData;
+      }
     }
 
     return data;

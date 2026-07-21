@@ -21,29 +21,38 @@ export function useTrendingNearby() {
       const location = await captureAndStoreUserLocation();
 
       if (!location) {
+        console.log("📍 Location null — permission denied");
         setPermissionDenied(true);
         setMovies([]);
+        setCity(null);
         return;
       }
 
-      setCity(location.city);
+      const cityName = location.city || "Nearby";
+      setCity(cityName);
 
-      // Fetch nearby trending movies
+      console.log(`📍 Location: ${location.latitude}, ${location.longitude}`);
+      console.log(`📍 City: ${cityName}`);
+
+      // Fetch trending movies
       const results = await fetchTrendingNearby(
         location.latitude,
         location.longitude,
+        50000, // 50km radius
+        20, // Limit to 20 results
       );
 
-      if (Array.isArray(results)) {
+      console.log(`🎬 Found ${results?.length || 0} movies`);
+
+      if (Array.isArray(results) && results.length > 0) {
         setMovies(results);
       } else {
+        console.log("ℹ️ No movies found nearby");
         setMovies([]);
       }
     } catch (err) {
-      console.error("Trending Nearby Error:", err);
-
+      console.error("❌ Trending Nearby Error:", err);
       setMovies([]);
-
       setError(err?.message || "Failed to load trending movies.");
     } finally {
       setLoading(false);
