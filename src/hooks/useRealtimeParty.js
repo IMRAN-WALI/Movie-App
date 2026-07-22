@@ -1,5 +1,3 @@
-// src/hooks/useRealtimeParty.js - Updated with proper message handling
-
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 

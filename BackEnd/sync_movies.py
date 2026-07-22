@@ -1,11 +1,3 @@
-"""
-One-time / repeatable script to pull trending + popular movies from TMDB
-and upsert them into the Supabase `movies` table.
-
-Run with:  python sync_movies.py
-(venv activated, .env filled in — uses the same env vars as run.py)
-"""
-
 import os
 import requests
 from dotenv import load_dotenv

@@ -1,27 +1,27 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/no-unescaped-entities */
+import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
 import React, { useState } from "react";
 import {
-  View,
-  Text,
-  TextInput,
-  Pressable,
   ActivityIndicator,
   Alert,
+  Image,
   KeyboardAvoidingView,
   Platform,
-  Image,
+  Pressable,
   ScrollView,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
-import {
-  signInWithEmail,
-  resendConfirmationEmail,
-} from "../../src/services/authService";
 import { safeBack } from "../../src/lib/safeBack";
+import {
+  resendConfirmationEmail,
+  signInWithEmail,
+} from "../../src/services/authService";
 
 const Login = () => {
   const [email, setEmail] = useState("");

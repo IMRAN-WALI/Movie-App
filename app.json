@@ -19,7 +19,8 @@
         "monochromeImage": "./assets/Images/MainLogo.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.imranwali.movieapp"
     },
     "web": {
       "bundler": "metro",
@@ -46,6 +47,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "721483fd-593f-4af0-af2a-480a8fa1a5bf"
+      }
     }
   }
 }

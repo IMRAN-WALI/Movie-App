@@ -17,7 +17,9 @@ function extractTokensFromUrl(url) {
 }
 
 export async function signInWithGoogle() {
+  
   return new Promise(async (resolve) => {
+    
     let settled = false;
 
     // Deep link ko independently sunte hain (dismiss bug ka workaround)
