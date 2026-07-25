@@ -180,3 +180,33 @@ export async function getProfile(userId) {
     return null;
   }
 }
+
+export async function sendPasswordReset(email) {
+  try {
+    const redirectTo = makeRedirectUri({
+      scheme: "movieapp",
+      path: "auth/reset-password",
+    });
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo,
+    });
+
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function updatePassword(newPassword) {
+  try {
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword,
+    });
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    throw error;
+  }
+}

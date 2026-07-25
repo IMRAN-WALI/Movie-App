@@ -1,8 +1,16 @@
 import { AntDesign } from "@expo/vector-icons";
+import Constants from "expo-constants";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import React, { useEffect } from "react";
-import { ActivityIndicator, Image, Pressable, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  Pressable,
+  Text,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../src/hooks/useAuth";
 import { signInWithGoogle } from "../src/lib/auth";
@@ -16,6 +24,22 @@ export default function Landing() {
       router.replace("/(tabs)");
     }
   }, [loading, session]);
+
+  const handleGoogleSignIn = async () => {
+    const isExpoGo = Constants.appOwnership === "expo";
+    if (isExpoGo) {
+      Alert.alert(
+        "Not available in Expo Go",
+        "Google Sign-In needs a development build to work properly. Use Email/Password for now — this will work automatically once you create your build.",
+      );
+      return;
+    }
+    try {
+      await signInWithGoogle();
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   if (loading) {
     return (
@@ -145,13 +169,7 @@ export default function Landing() {
           </View>
 
           <Pressable
-            onPress={async () => {
-              try {
-                await signInWithGoogle();
-              } catch (err) {
-                console.log(err);
-              }
-            }}
+            onPress={handleGoogleSignIn}
             style={{
               backgroundColor: "#FFFFFF",
               borderRadius: 16,

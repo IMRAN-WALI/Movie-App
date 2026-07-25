@@ -111,7 +111,7 @@ const Login = () => {
 
       <SafeAreaView style={{ flex: 1 }}>
         <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{ flex: 1 }}
         >
           <ScrollView
@@ -239,7 +239,7 @@ const Login = () => {
                     backgroundColor: "rgba(255,255,255,0.08)",
                     borderRadius: 16,
                     paddingHorizontal: 16,
-                    marginBottom: 28,
+                    marginBottom: 12,
                     height: 54,
                     borderWidth: 1.5,
                     borderColor:
@@ -277,6 +277,21 @@ const Login = () => {
                     />
                   </Pressable>
                 </View>
+
+                <Pressable
+                  onPress={() => router.push("/auth/forgot-password")}
+                  style={{ alignSelf: "flex-end", marginBottom: 20 }}
+                >
+                  <Text
+                    style={{
+                      color: "#a5b4fc",
+                      fontSize: 13,
+                      fontWeight: "600",
+                    }}
+                  >
+                    Forgot password?
+                  </Text>
+                </Pressable>
 
                 <Pressable
                   onPress={handleLogin}

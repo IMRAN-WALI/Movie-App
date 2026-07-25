@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { View, ActivityIndicator } from "react-native";
 import "../global.css";
 import { supabase } from "../src/lib/supabase";
+import { isAuthRedirectSuppressed } from "../src/lib/authRedirectLock";
 
 export default function Layout() {
   const router = useRouter();
@@ -28,6 +29,8 @@ export default function Layout() {
 
   useEffect(() => {
     if (!ready) return;
+    if (isAuthRedirectSuppressed()) return; // signup flow ke doraan redirect mat karo
+
     const inAuth = segments[0] === "auth";
     const inTabs = segments[0] === "(tabs)";
 

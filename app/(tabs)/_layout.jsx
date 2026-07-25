@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "../../src/hooks/useAuth";
+import { isAuthRedirectSuppressed } from "../../src/lib/authRedirectLock";
 
 // Enable className on LinearGradient
 cssInterop(LinearGradient, { className: "style" });
@@ -117,6 +118,7 @@ const TabsLayout = () => {
   const { session, loading } = useAuth();
 
   useEffect(() => {
+    if (isAuthRedirectSuppressed()) return;
     if (!loading && !session) {
       router.replace("/auth/login");
     }

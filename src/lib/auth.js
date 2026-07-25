@@ -3,6 +3,7 @@ import * as WebBrowser from "expo-web-browser";
 import * as AuthSession from "expo-auth-session";
 import * as Linking from "expo-linking";
 import { supabase } from "./supabase";
+import { Alert } from "react-native";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -17,80 +18,66 @@ function extractTokensFromUrl(url) {
 }
 
 export async function signInWithGoogle() {
-  
-  return new Promise(async (resolve) => {
-    
-    let settled = false;
-
-    // Deep link ko independently sunte hain (dismiss bug ka workaround)
-    const subscription = Linking.addEventListener("url", async ({ url }) => {
-      const tokens = extractTokensFromUrl(url);
-      if (tokens && !settled) {
-        settled = true;
-        subscription.remove();
-        WebBrowser.dismissBrowser();
-        const { data, error } = await supabase.auth.setSession(tokens);
-        resolve(
-          error
-            ? { session: null, error: error.message }
-            : { session: data.session, error: null },
-        );
-      }
+  try {
+    const redirectUrl = AuthSession.makeRedirectUri({
+      scheme: "movieapp",
+      path: "auth/callback",
     });
 
-    try {
-      const redirectUrl = AuthSession.makeRedirectUri({
-        path: "auth/callback",
-      });
+    console.log("====================================");
+    console.log("Redirect URL:", redirectUrl);
+    console.log("====================================");
 
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: { redirectTo: redirectUrl, skipBrowserRedirect: true },
-      });
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: redirectUrl,
+        skipBrowserRedirect: true,
+      },
+    });
 
-      if (error) throw error;
-      const authUrl = data?.url;
-      if (!authUrl) throw new Error("Supabase se auth URL nahi mila");
-
-      const result = await WebBrowser.openAuthSessionAsync(
-        authUrl,
-        redirectUrl,
-      );
-
-      if (!settled) {
-        if (result.type === "success" && result.url) {
-          const tokens = extractTokensFromUrl(result.url);
-          if (tokens) {
-            settled = true;
-            subscription.remove();
-            const { data: sessionData, error: sessionError } =
-              await supabase.auth.setSession(tokens);
-            resolve(
-              sessionError
-                ? { session: null, error: sessionError.message }
-                : { session: sessionData.session, error: null },
-            );
-            return;
-          }
-        }
-
-        // Thoda wait karo — shayad Linking listener already deep link pakad chuka ho
-        setTimeout(() => {
-          if (!settled) {
-            settled = true;
-            subscription.remove();
-            resolve({ session: null, error: "Login cancel ya fail ho gaya" });
-          }
-        }, 1500);
-      }
-    } catch (err) {
-      if (!settled) {
-        settled = true;
-        subscription.remove();
-        resolve({ session: null, error: err.message });
-      }
+    if (error) {
+      console.error("Supabase OAuth Error:", error);
+      throw error;
     }
-  });
+
+    if (!data?.url) {
+      throw new Error("No OAuth URL returned from Supabase.");
+    }
+
+    const result = await WebBrowser.openAuthSessionAsync(data.url, redirectUrl);
+
+    console.log("OAuth Result:", result);
+
+    if (result.type === "success" && result.url) {
+      const { data: sessionData, error: sessionError } =
+        await supabase.auth.exchangeCodeForSession(result.url);
+
+      if (sessionError) {
+        console.error("Exchange Session Error:", sessionError);
+        throw sessionError;
+      }
+
+      console.log("Google Login Success");
+      return sessionData;
+    }
+
+    if (result.type === "cancel") {
+      throw new Error("Google Sign-In cancelled.");
+    }
+
+    throw new Error(`Unexpected auth result: ${result.type}`);
+  } catch (err) {
+    console.error("Google Sign-In Failed:");
+    console.error(err);
+
+    Alert.alert(
+      "Google Login Error",
+      err?.message || JSON.stringify(err, null, 2),
+    );
+
+    throw err;
+  }
 }
 
 export function onAuthStateChange(callback) {
