@@ -31,7 +31,10 @@ const ForgotPassword = () => {
     setLoading(true);
     try {
       await sendPasswordReset(email.trim());
-      setSent(true);
+      router.push({
+        pathname: "/auth/verify-code",
+        params: { email: email.trim() },
+      });
     } catch (e) {
       Alert.alert(
         "Couldn't send reset link",

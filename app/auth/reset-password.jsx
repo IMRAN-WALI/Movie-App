@@ -15,26 +15,39 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { updatePassword } from "../../src/services/authService";
+import { suppressAuthRedirect } from "../../src/lib/authRedirectLock";
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Eye toggle states
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const handleReset = async () => {
     if (password.length < 6) {
       Alert.alert("Weak password", "Password must be at least 6 characters.");
       return;
     }
+
     if (password !== confirmPassword) {
       Alert.alert("Passwords don't match", "Please re-enter to confirm.");
       return;
     }
+
     setLoading(true);
+
     try {
       await updatePassword(password);
+      suppressAuthRedirect(false);
+
       Alert.alert("Success", "Your password has been updated.", [
-        { text: "OK", onPress: () => router.replace("/(tabs)") },
+        {
+          text: "OK",
+          onPress: () => router.replace("/(tabs)"),
+        },
       ]);
     } catch (e) {
       Alert.alert(
@@ -56,12 +69,17 @@ const ResetPassword = () => {
           behavior={Platform.OS === "ios" ? "padding" : undefined}
           style={{ flex: 1 }}
         >
-          <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+          <ScrollView
+            contentContainerStyle={{
+              flexGrow: 1,
+            }}
+            keyboardShouldPersistTaps="handled"
+          >
             <View
               style={{
                 flex: 1,
-                paddingHorizontal: 24,
                 justifyContent: "center",
+                paddingHorizontal: 24,
               }}
             >
               <View
@@ -81,8 +99,9 @@ const ResetPassword = () => {
                     marginBottom: 6,
                   }}
                 >
-                  Set new password
+                  Set New Password
                 </Text>
+
                 <Text
                   style={{
                     color: "rgba(255,255,255,0.65)",
@@ -93,6 +112,7 @@ const ResetPassword = () => {
                   Choose a new password for your account.
                 </Text>
 
+                {/* New Password */}
                 <View
                   style={{
                     flexDirection: "row",
@@ -106,15 +126,17 @@ const ResetPassword = () => {
                 >
                   <Ionicons
                     name="lock-closed-outline"
-                    size={19}
+                    size={20}
                     color="rgba(255,255,255,0.6)"
                   />
+
                   <TextInput
                     value={password}
                     onChangeText={setPassword}
-                    placeholder="New password"
+                    placeholder="New Password"
                     placeholderTextColor="rgba(255,255,255,0.4)"
-                    secureTextEntry
+                    secureTextEntry={!showPassword}
+                    autoCapitalize="none"
                     style={{
                       flex: 1,
                       color: "white",
@@ -122,8 +144,20 @@ const ResetPassword = () => {
                       fontSize: 15,
                     }}
                   />
+
+                  <Pressable
+                    onPress={() => setShowPassword(!showPassword)}
+                    hitSlop={10}
+                  >
+                    <Ionicons
+                      name={showPassword ? "eye-off-outline" : "eye-outline"}
+                      size={22}
+                      color="rgba(255,255,255,0.7)"
+                    />
+                  </Pressable>
                 </View>
 
+                {/* Confirm Password */}
                 <View
                   style={{
                     flexDirection: "row",
@@ -137,15 +171,17 @@ const ResetPassword = () => {
                 >
                   <Ionicons
                     name="lock-closed-outline"
-                    size={19}
+                    size={20}
                     color="rgba(255,255,255,0.6)"
                   />
+
                   <TextInput
                     value={confirmPassword}
                     onChangeText={setConfirmPassword}
-                    placeholder="Confirm new password"
+                    placeholder="Confirm New Password"
                     placeholderTextColor="rgba(255,255,255,0.4)"
-                    secureTextEntry
+                    secureTextEntry={!showConfirmPassword}
+                    autoCapitalize="none"
                     style={{
                       flex: 1,
                       color: "white",
@@ -153,8 +189,22 @@ const ResetPassword = () => {
                       fontSize: 15,
                     }}
                   />
+
+                  <Pressable
+                    onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                    hitSlop={10}
+                  >
+                    <Ionicons
+                      name={
+                        showConfirmPassword ? "eye-off-outline" : "eye-outline"
+                      }
+                      size={22}
+                      color="rgba(255,255,255,0.7)"
+                    />
+                  </Pressable>
                 </View>
 
+                {/* Button */}
                 <Pressable onPress={handleReset} disabled={loading}>
                   <LinearGradient
                     colors={["#6366f1", "#4338ca"]}

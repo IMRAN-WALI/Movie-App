@@ -183,15 +183,7 @@ export async function getProfile(userId) {
 
 export async function sendPasswordReset(email) {
   try {
-    const redirectTo = makeRedirectUri({
-      scheme: "movieapp",
-      path: "auth/reset-password",
-    });
-
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo,
-    });
-
+    const { error } = await supabase.auth.resetPasswordForEmail(email);
     if (error) throw error;
     return true;
   } catch (error) {
@@ -205,6 +197,66 @@ export async function updatePassword(newPassword) {
       password: newPassword,
     });
     if (error) throw error;
+    return true;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function verifyResetCode(email, token) {
+  try {
+    const { data, error } = await supabase.auth.verifyOtp({
+      email,
+      token,
+      type: "recovery",
+    });
+    if (error) {
+      if (error.message?.toLowerCase().includes("expired")) {
+        throw new Error("CODE_EXPIRED");
+      }
+      if (error.message?.toLowerCase().includes("invalid")) {
+        throw new Error("INVALID_CODE");
+      }
+      throw error;
+    }
+    return data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+// ============ NEW FUNCTION FOR PASSWORD CHANGE WITH VERIFICATION ============
+
+export async function changePasswordWithVerification(
+  email,
+  currentPassword,
+  newPassword,
+) {
+  try {
+    // Step 1: Verify current password by signing in
+    const { data: signInData, error: signInError } =
+      await supabase.auth.signInWithPassword({
+        email,
+        password: currentPassword,
+      });
+
+    if (signInError) {
+      if (signInError.message.includes("Invalid login credentials")) {
+        throw new Error("INCORRECT_PASSWORD");
+      }
+      throw signInError;
+    }
+
+    // Step 2: Current password is correct, update to new password
+    const { error: updateError } = await supabase.auth.updateUser({
+      password: newPassword,
+    });
+
+    if (updateError) throw updateError;
+
+    // Step 3: Sign out the user after successful password change
+    await supabase.auth.signOut();
+
     return true;
   } catch (error) {
     throw error;

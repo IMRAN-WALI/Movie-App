@@ -9,45 +9,60 @@ import { isAuthRedirectSuppressed } from "../src/lib/authRedirectLock";
 export default function Layout() {
   const router = useRouter();
   const segments = useSegments();
+
   const [ready, setReady] = useState(false);
   const [session, setSession] = useState(null);
 
   useEffect(() => {
-    // Initial session check (app cold start)
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
       setReady(true);
     });
 
-    // Live listener — Google OAuth / any sign-in yahan fire hoga
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, s) => {
       setSession(s);
     });
 
-    return () => sub.subscription.unsubscribe();
+    return () => subscription.unsubscribe();
   }, []);
 
   useEffect(() => {
     if (!ready) return;
-    if (isAuthRedirectSuppressed()) return; // signup flow ke doraan redirect mat karo
+    if (isAuthRedirectSuppressed()) return;
 
     const inAuth = segments[0] === "auth";
     const inTabs = segments[0] === "(tabs)";
 
-    if (session && inAuth) {
+    const redirectAuthPages = [
+      "login",
+      "signup",
+      "forgot-password",
+      "verify-code",
+      "reset-password",
+    ];
+
+    const currentPage = segments[1];
+
+    if (session && inAuth && redirectAuthPages.includes(currentPage)) {
       router.replace("/(tabs)");
-    } else if (!session && inTabs) {
-      router.replace("/auth/login");
+      return;
     }
-  }, [session, ready, segments]);
+
+    if (!session && inTabs) {
+      router.replace("/auth/login");
+      return;
+    }
+  }, [session, ready, segments, router]);
 
   if (!ready) {
     return (
       <View
         style={{
           flex: 1,
-          alignItems: "center",
           justifyContent: "center",
+          alignItems: "center",
           backgroundColor: "#1e1b4b",
         }}
       >
@@ -57,7 +72,7 @@ export default function Layout() {
   }
 
   return (
-    <Stack screenOptions={{ headerTitleAlign: "center", headerShown: false }}>
+    <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" />
       <Stack.Screen name="auth" />
       <Stack.Screen name="(tabs)" />

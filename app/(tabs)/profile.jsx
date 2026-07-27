@@ -1,21 +1,21 @@
 /* eslint-disable no-unused-vars */
+import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import { router, useFocusEffect } from "expo-router";
 import React, { useCallback, useState } from "react";
 import {
-  View,
-  Text,
-  Pressable,
   ActivityIndicator,
   Alert,
-  ScrollView,
   Image,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
-import { router, useFocusEffect } from "expo-router";
 import { supabase } from "../../src/lib/supabase";
 import { signOut } from "../../src/services/authService";
 import { fetchProfileStats } from "../../src/services/profileService";
@@ -151,10 +151,10 @@ const Profile = () => {
     ]);
   };
 
-  const initials = (profile?.display_name || profile?.username || email || "?")
-    .trim()
-    .slice(0, 1)
-    .toUpperCase();
+  // Get display name from profile or use email
+  const displayName =
+    profile?.display_name || email?.split("@")[0] || "Movie Fan";
+  const initials = displayName.trim().slice(0, 1).toUpperCase();
 
   if (loading) {
     return (
@@ -241,13 +241,8 @@ const Profile = () => {
                 marginTop: 14,
               }}
             >
-              {profile?.display_name || profile?.username || "Movie Fan"}
+              {displayName}
             </Text>
-            {profile?.username && (
-              <Text style={{ color: "#a5b4fc", marginTop: 2, fontSize: 13 }}>
-                @{profile.username}
-              </Text>
-            )}
             <Text
               style={{
                 color: "rgba(255,255,255,0.6)",
@@ -317,7 +312,7 @@ const Profile = () => {
             <MenuItem
               icon="lock-closed-outline"
               label="Change Password"
-              onPress={() => router.push("/auth/forgot-password")}
+              onPress={() => router.push("/auth/change-password")}
               isLast
             />
           </MenuSection>

@@ -21,7 +21,6 @@ import { suppressAuthRedirect } from "../../src/lib/authRedirectLock";
 import { safeBack } from "../../src/lib/safeBack";
 
 const Signup = () => {
-  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -72,8 +71,8 @@ const Signup = () => {
       return;
     }
 
-    if (!username.trim() || !email.trim() || !password) {
-      Alert.alert("Missing info", "Fill in username, email, and password.");
+    if (!email.trim() || !password) {
+      Alert.alert("Missing info", "Fill in email and password.");
       return;
     }
 
@@ -96,9 +95,8 @@ const Signup = () => {
     suppressAuthRedirect(true);
 
     try {
-      await signUpWithEmail(email.trim(), password, username.trim());
+      await signUpWithEmail(email.trim(), password, email.split("@")[0]);
 
-      setUsername("");
       setEmail("");
       setPassword("");
 
@@ -298,31 +296,6 @@ const Signup = () => {
                     </Text>
                   </View>
                 )}
-
-                <View style={fieldStyle("username")}>
-                  <Ionicons
-                    name="person-outline"
-                    size={19}
-                    color="rgba(255,255,255,0.6)"
-                  />
-                  <TextInput
-                    value={username}
-                    onChangeText={setUsername}
-                    onFocus={() => setFocusedField("username")}
-                    onBlur={() => setFocusedField(null)}
-                    placeholder="Username"
-                    placeholderTextColor="rgba(255,255,255,0.4)"
-                    autoCapitalize="none"
-                    editable={!rateLimitExceeded && !loading}
-                    style={{
-                      flex: 1,
-                      color: "white",
-                      marginLeft: 12,
-                      fontSize: 15,
-                      opacity: rateLimitExceeded || loading ? 0.5 : 1,
-                    }}
-                  />
-                </View>
 
                 <View style={fieldStyle("email")}>
                   <Ionicons
