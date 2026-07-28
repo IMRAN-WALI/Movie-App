@@ -15,22 +15,44 @@ export async function captureAndStoreUserLocation() {
 
     const places = await Location.reverseGeocodeAsync({ latitude, longitude });
 
+    console.log("📍 FULL GEOCODE:", JSON.stringify(places[0], null, 2));
+
     const city =
-      places[0]?.city || places[0]?.region || places[0]?.subregion || null;
+      places[0]?.subregion ||
+      places[0]?.district ||
+      places[0]?.city ||
+      places[0]?.region ||
+      null;
 
     const {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) throw new Error("User not authenticated.");
 
-    await supabase.rpc("set_profile_location", {
-      p_lat: latitude,
-      p_lng: longitude,
-      p_city: city,
-    });
+    const { data: rpcData, error: rpcError } = await supabase.rpc(
+      "set_profile_location",
+      {
+        p_lat: latitude,
+        p_lng: longitude,
+        p_city: city,
+      },
+    );
+
+    if (rpcError) {
+      console.log("❌❌❌ set_profile_location RPC ERROR:", rpcError.message);
+      console.log("❌❌❌ FULL RPC ERROR:", JSON.stringify(rpcError, null, 2));
+    } else {
+      console.log("✅ Location saved to profile:", {
+        latitude,
+        longitude,
+        city,
+      });
+    }
 
     return { latitude, longitude, city };
   } catch (error) {
+    console.log("❌❌❌ LOCATION ERROR:", error?.message);
+    console.log("❌❌❌ FULL ERROR:", JSON.stringify(error, null, 2));
     return {
       latitude: 24.877569,
       longitude: 67.1682256,
@@ -52,6 +74,9 @@ export async function fetchTrendingNearby(
     radius_meters: radiusMeters,
     result_limit: resultLimit,
   });
-  if (error) throw error;
+  if (error) {
+    console.log("❌❌❌ trending_movies_near RPC ERROR:", error.message);
+    throw error;
+  }
   return data ?? [];
 }

@@ -1,11 +1,23 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabase";
+import {
+  decryptMessage,
+  deriveRoomKey,
+  encryptMessage,
+} from "../utils/encryption";
 
 export function useRealtimeParty(sessionId) {
   const [party, setParty] = useState(null);
   const [messages, setMessages] = useState([]);
   const [participants, setParticipants] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Room key is derived once we know the party's invite code — it never
+  // touches the network, so it doubles as the "encryption key" for E2EE.
+  const roomKey = useMemo(() => {
+    if (!party?.id || !party?.invite_code) return null;
+    return deriveRoomKey(party.id, party.invite_code);
+  }, [party?.id, party?.invite_code]);
 
   useEffect(() => {
     if (!sessionId) {
@@ -35,6 +47,8 @@ export function useRealtimeParty(sessionId) {
         console.log("✅ Party loaded:", partyData);
         setParty(partyData);
 
+        const key = deriveRoomKey(partyData.id, partyData.invite_code);
+
         // Fetch participants
         const { data: participantsData } = await supabase
           .from("party_participants")
@@ -44,7 +58,7 @@ export function useRealtimeParty(sessionId) {
         console.log("✅ Participants loaded:", participantsData?.length || 0);
         setParticipants(participantsData || []);
 
-        // ✅ Fetch messages
+        // ✅ Fetch messages (decrypt each one for display)
         const { data: messagesData, error: messagesError } = await supabase
           .from("party_messages")
           .select("*")
@@ -55,7 +69,11 @@ export function useRealtimeParty(sessionId) {
           console.error("❌ Messages fetch error:", messagesError);
         } else {
           console.log("✅ Messages loaded:", messagesData?.length || 0);
-          setMessages(messagesData || []);
+          const decrypted = (messagesData || []).map((m) => ({
+            ...m,
+            content: decryptMessage(m.content, key),
+          }));
+          setMessages(decrypted);
         }
       } catch (error) {
         console.error("❌ Error:", error);
@@ -80,7 +98,22 @@ export function useRealtimeParty(sessionId) {
         },
         (payload) => {
           console.log("💬 New message received:", payload.new);
-          setMessages((prev) => [...prev, payload.new]);
+          setParty((currentParty) => {
+            const key = deriveRoomKey(
+              currentParty?.id,
+              currentParty?.invite_code,
+            );
+            const decryptedMsg = {
+              ...payload.new,
+              content: decryptMessage(payload.new.content, key),
+            };
+            setMessages((prev) => {
+              // Avoid duplicating the message we already added optimistically.
+              if (prev.some((m) => m.id === decryptedMsg.id)) return prev;
+              return [...prev, decryptedMsg];
+            });
+            return currentParty;
+          });
         },
       )
       .on(
@@ -106,7 +139,7 @@ export function useRealtimeParty(sessionId) {
     };
   }, [sessionId]);
 
-  // ✅ Send message function
+  // ✅ Send message function (encrypts before sending)
   const sendMessage = async (text) => {
     if (!text.trim() || !sessionId) return;
 
@@ -120,14 +153,16 @@ export function useRealtimeParty(sessionId) {
         return;
       }
 
-      console.log("📤 Sending message:", text);
+      console.log("📤 Sending message");
+
+      const cipherText = encryptMessage(text.trim(), roomKey);
 
       const { data, error } = await supabase
         .from("party_messages")
         .insert({
           party_id: sessionId,
           user_id: user.id,
-          content: text.trim(),
+          content: cipherText,
         })
         .select()
         .single();
@@ -135,9 +170,9 @@ export function useRealtimeParty(sessionId) {
       if (error) {
         console.error("❌ Send message error:", error);
       } else {
-        console.log("✅ Message sent:", data);
-        // ✅ Optimistically add to UI
-        setMessages((prev) => [...prev, data]);
+        console.log("✅ Message sent (encrypted)");
+        // ✅ Optimistically add the plain-text version to UI
+        setMessages((prev) => [...prev, { ...data, content: text.trim() }]);
       }
     } catch (error) {
       console.error("❌ Send message error:", error);

@@ -32,6 +32,16 @@ def create_party(host_id, movie_id):
         {"party_id": party["id"], "user_id": host_id, "is_talking": False}
     ).execute()
 
+    # Track this as a watch for trending purposes.
+    supabase.table("watch_history").insert(
+        {
+            "user_id": host_id,
+            "movie_id": movie_id,
+            "progress_seconds": 0,
+            "completed": False,
+        }
+    ).execute()
+
     return party
 
 
@@ -40,7 +50,7 @@ def sync_party(party_id, user_id, current_time):
 
     party_resp = (
         supabase.table("watch_parties")
-        .select("host_id, is_active")
+        .select("host_id, is_active, movie_id")
         .eq("id", party_id)
         .single()
         .execute()
@@ -64,12 +74,16 @@ def sync_party(party_id, user_id, current_time):
             raise PermissionError("Not a member of this party")
 
     # This update is what Supabase Realtime broadcasts to every subscribed
-    # React Native client (watch_parties is in the supabase_realtime publication).
     update_resp = (
         supabase.table("watch_parties")
         .update({"current_time": current_time})
         .eq("id", party_id)
         .execute()
     )
+
+    # Keep this user's watch_history progress in sync too.
+    supabase.table("watch_history").update(
+        {"progress_seconds": current_time}
+    ).eq("user_id", user_id).eq("movie_id", party["movie_id"]).execute()
 
     return update_resp.data[0]
