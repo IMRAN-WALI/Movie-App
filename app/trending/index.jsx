@@ -103,7 +103,7 @@ export default function TrendingScreen() {
           {/* Header */}
           <View className="flex-row items-center justify-between mb-4">
             <View>
-              <Text className="text-white/70 text-sm">📍 Trending in</Text>
+              <Text className="text-white/70 text-sm">Trending in</Text>
               <Text className="text-white text-2xl font-bold">
                 {city || "Nearby"}
               </Text>

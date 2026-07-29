@@ -16,6 +16,7 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
+import { useLanguage } from "../../src/i18n/LanguageContext";
 import { supabase } from "../../src/lib/supabase";
 import { signOut } from "../../src/services/authService";
 import { fetchProfileStats } from "../../src/services/profileService";
@@ -103,6 +104,7 @@ const MenuItem = ({ icon, label, onPress, danger, isLast }) => (
 
 const Profile = () => {
   const insets = useSafeAreaInsets();
+  const { t } = useLanguage();
   const [profile, setProfile] = useState(null);
   const [email, setEmail] = useState(null);
   const [stats, setStats] = useState(null);
@@ -135,25 +137,29 @@ const Profile = () => {
   );
 
   const handleSignOut = async () => {
-    Alert.alert("Sign out", "Are you sure you want to sign out?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Sign Out",
-        style: "destructive",
-        onPress: async () => {
-          try {
-            await signOut();
-          } catch (error) {
-            Alert.alert("Error", "Could not sign out. Please try again.");
-          }
+    Alert.alert(
+      t("profile_sign_out_confirm_title"),
+      t("profile_sign_out_confirm_message"),
+      [
+        { text: t("profile_cancel"), style: "cancel" },
+        {
+          text: t("profile_sign_out"),
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await signOut();
+            } catch (error) {
+              Alert.alert(t("profile_error"), t("profile_sign_out_error"));
+            }
+          },
         },
-      },
-    ]);
+      ],
+    );
   };
 
   // Get display name from profile or use email
   const displayName =
-    profile?.display_name || email?.split("@")[0] || "Movie Fan";
+    profile?.display_name || email?.split("@")[0] || t("profile_movie_fan");
   const initials = displayName.trim().slice(0, 1).toUpperCase();
 
   if (loading) {
@@ -271,48 +277,53 @@ const Profile = () => {
           {/* Stats */}
           <View style={{ flexDirection: "row", gap: 10, marginBottom: 28 }}>
             <StatCard
-              label="Watched"
+              label={t("profile_watched")}
               value={stats?.watchedCount ?? 0}
               icon="film-outline"
             />
             <StatCard
-              label="Rated"
+              label={t("profile_rated")}
               value={stats?.ratingsCount ?? 0}
               icon="star-outline"
             />
             <StatCard
-              label="Parties"
+              label={t("profile_parties")}
               value={stats?.partiesHosted ?? 0}
               icon="people-outline"
             />
             <StatCard
-              label="Saved"
+              label={t("profile_saved")}
               value={stats?.savedCount ?? 0}
               icon="bookmark-outline"
             />
           </View>
 
           {/* Activity */}
-          <MenuSection title="Your Activity">
+          <MenuSection title={t("profile_your_activity")}>
             <MenuItem
               icon="time-outline"
-              label="Watch History"
+              label={t("profile_watch_history")}
               onPress={() => router.push("/profile/history")}
               isLast
             />
           </MenuSection>
 
           {/* Account */}
-          <MenuSection title="Account">
+          <MenuSection title={t("profile_account")}>
             <MenuItem
               icon="person-outline"
-              label="Edit Profile"
+              label={t("profile_edit_profile")}
               onPress={() => router.push("/profile/edit")}
             />
             <MenuItem
               icon="lock-closed-outline"
-              label="Change Password"
+              label={t("profile_change_password")}
               onPress={() => router.push("/auth/change-password")}
+            />
+            <MenuItem
+              icon="language-outline"
+              label={t("profile_app_language")}
+              onPress={() => router.push("/profile/language")}
               isLast
             />
           </MenuSection>
@@ -328,7 +339,7 @@ const Profile = () => {
             }}
           >
             <Text style={{ color: "#f87171", fontWeight: "700" }}>
-              Sign Out
+              {t("profile_sign_out")}
             </Text>
           </Pressable>
 
@@ -340,7 +351,7 @@ const Profile = () => {
               marginTop: 20,
             }}
           >
-            Movie App v1.0.0
+            {t("profile_app_version")}
           </Text>
         </ScrollView>
       </SafeAreaView>

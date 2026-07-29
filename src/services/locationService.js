@@ -22,7 +22,7 @@ export async function captureAndStoreUserLocation() {
       places[0]?.district ||
       places[0]?.city ||
       places[0]?.region ||
-      null;
+      null; 
 
     const {
       data: { user },
@@ -68,15 +68,34 @@ export async function fetchTrendingNearby(
   radiusMeters = 50000,
   resultLimit = 20,
 ) {
+  console.log("🔍 Calling trending_movies_near with:", {
+    lat: latitude,
+    lng: longitude,
+    radius_meters: radiusMeters,
+    result_limit: resultLimit,
+  });
+
   const { data, error } = await supabase.rpc("trending_movies_near", {
     lat: latitude,
     lng: longitude,
     radius_meters: radiusMeters,
     result_limit: resultLimit,
   });
+
   if (error) {
-    console.log("❌❌❌ trending_movies_near RPC ERROR:", error.message);
+    console.log("❌❌❌ trending_movies_near RPC ERROR:", {
+      message: error.message,
+      code: error.code,
+      details: error.details,
+      hint: error.hint,
+    });
     throw error;
   }
+
+  console.log("✅ trending_movies_near returned:", {
+    dataLength: data?.length || 0,
+    data: data,
+  });
+
   return data ?? [];
 }

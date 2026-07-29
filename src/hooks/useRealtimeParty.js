@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabase";
 import {
-  decryptMessage,
   deriveRoomKey,
   encryptMessage,
+  decryptMessage,
 } from "../utils/encryption";
 
 export function useRealtimeParty(sessionId) {
@@ -11,6 +11,7 @@ export function useRealtimeParty(sessionId) {
   const [messages, setMessages] = useState([]);
   const [participants, setParticipants] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentUserId, setCurrentUserId] = useState(null);
 
   // Room key is derived once we know the party's invite code — it never
   // touches the network, so it doubles as the "encryption key" for E2EE.
@@ -18,6 +19,12 @@ export function useRealtimeParty(sessionId) {
     if (!party?.id || !party?.invite_code) return null;
     return deriveRoomKey(party.id, party.invite_code);
   }, [party?.id, party?.invite_code]);
+
+  useEffect(() => {
+    supabase.auth
+      .getUser()
+      .then(({ data }) => setCurrentUserId(data.user?.id ?? null));
+  }, []);
 
   useEffect(() => {
     if (!sessionId) {
@@ -72,6 +79,7 @@ export function useRealtimeParty(sessionId) {
           const decrypted = (messagesData || []).map((m) => ({
             ...m,
             content: decryptMessage(m.content, key),
+            read_by: m.read_by || [],
           }));
           setMessages(decrypted);
         }
@@ -84,7 +92,7 @@ export function useRealtimeParty(sessionId) {
 
     fetchData();
 
-    // ✅ Real-time subscription for messages
+    // ✅ Real-time subscription for messages (new messages + read receipt updates)
     const channel = supabase.channel(`party-messages:${sessionId}`);
 
     channel
@@ -106,14 +114,34 @@ export function useRealtimeParty(sessionId) {
             const decryptedMsg = {
               ...payload.new,
               content: decryptMessage(payload.new.content, key),
+              read_by: payload.new.read_by || [],
             };
             setMessages((prev) => {
-              // Avoid duplicating the message we already added optimistically.
               if (prev.some((m) => m.id === decryptedMsg.id)) return prev;
               return [...prev, decryptedMsg];
             });
             return currentParty;
           });
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "party_messages",
+          filter: `party_id=eq.${sessionId}`,
+        },
+        (payload) => {
+          // Someone read a message (or messages) — update ticks live.
+          console.log("👀 Message updated (read receipt):", payload.new.id);
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === payload.new.id
+                ? { ...m, read_by: payload.new.read_by || [] }
+                : m,
+            ),
+          );
         },
       )
       .on(
@@ -171,11 +199,42 @@ export function useRealtimeParty(sessionId) {
         console.error("❌ Send message error:", error);
       } else {
         console.log("✅ Message sent (encrypted)");
-        // ✅ Optimistically add the plain-text version to UI
-        setMessages((prev) => [...prev, { ...data, content: text.trim() }]);
+        setMessages((prev) => [
+          ...prev,
+          { ...data, content: text.trim(), read_by: data.read_by || [] },
+        ]);
       }
     } catch (error) {
       console.error("❌ Send message error:", error);
+    }
+  };
+
+  // ✅ Mark all messages from OTHER users as read by me (blue-tick logic)
+  const markMessagesAsRead = async () => {
+    if (!currentUserId || messages.length === 0) return;
+
+    const unread = messages.filter(
+      (m) =>
+        m.user_id !== currentUserId &&
+        !(m.read_by || []).includes(currentUserId),
+    );
+
+    if (unread.length === 0) return;
+
+    for (const msg of unread) {
+      const newReadBy = [...(msg.read_by || []), currentUserId];
+      const { error } = await supabase
+        .from("party_messages")
+        .update({ read_by: newReadBy })
+        .eq("id", msg.id);
+
+      if (error) {
+        console.error("❌ markMessagesAsRead error:", error);
+      } else {
+        setMessages((prev) =>
+          prev.map((m) => (m.id === msg.id ? { ...m, read_by: newReadBy } : m)),
+        );
+      }
     }
   };
 
@@ -196,7 +255,9 @@ export function useRealtimeParty(sessionId) {
     messages,
     participants,
     loading,
+    currentUserId,
     sendMessage,
+    markMessagesAsRead,
     broadcastPlayback,
   };
 }

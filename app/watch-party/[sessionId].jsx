@@ -20,6 +20,55 @@ import { useRealtimeParty } from "../../src/hooks/useRealtimeParty";
 import { supabase } from "../../src/lib/supabase";
 import { leaveWatchParty } from "../../src/services/partyService";
 
+// WhatsApp-style ticks for the sender's own messages.
+// - single grey check: sent, nobody else has read it yet
+// - double grey check: at least one other participant has read it
+// - double BLUE check: every other participant has read it
+function MessageTicks({ message, participants, currentUserId }) {
+  const readBy = message.read_by || [];
+  const otherParticipantIds = participants
+    .map((p) => p.user_id)
+    .filter((id) => id !== currentUserId);
+
+  const readByOthersCount = otherParticipantIds.filter((id) =>
+    readBy.includes(id),
+  ).length;
+
+  const allRead =
+    otherParticipantIds.length > 0 &&
+    readByOthersCount === otherParticipantIds.length;
+  const someRead = readByOthersCount > 0;
+
+  if (allRead) {
+    return (
+      <Ionicons
+        name="checkmark-done"
+        size={13}
+        color="#38bdf8"
+        style={{ marginLeft: 3 }}
+      />
+    );
+  }
+  if (someRead) {
+    return (
+      <Ionicons
+        name="checkmark-done"
+        size={13}
+        color="rgba(255,255,255,0.65)"
+        style={{ marginLeft: 3 }}
+      />
+    );
+  }
+  return (
+    <Ionicons
+      name="checkmark"
+      size={13}
+      color="rgba(255,255,255,0.65)"
+      style={{ marginLeft: 3 }}
+    />
+  );
+}
+
 const WatchPartyRoom = () => {
   const { sessionId } = useLocalSearchParams();
   const [currentUserId, setCurrentUserId] = useState(null);
@@ -29,8 +78,14 @@ const WatchPartyRoom = () => {
   const scrollViewRef = useRef();
   const inputRef = useRef();
 
-  const { party, messages, participants, loading, sendMessage } =
-    useRealtimeParty(sessionId ?? null);
+  const {
+    party,
+    messages,
+    participants,
+    loading,
+    sendMessage,
+    markMessagesAsRead,
+  } = useRealtimeParty(sessionId ?? null);
 
   useEffect(() => {
     supabase.auth
@@ -65,6 +120,14 @@ const WatchPartyRoom = () => {
       }, 100);
     }
   }, [messages]);
+
+  // Mark messages as read whenever the message list changes and the
+  // screen is visible (this drives the sender's blue-tick updates).
+  useEffect(() => {
+    if (messages?.length > 0) {
+      markMessagesAsRead();
+    }
+  }, [messages?.length]);
 
   const handleLeave = async () => {
     if (sessionId) await leaveWatchParty(sessionId);
@@ -262,13 +325,20 @@ const WatchPartyRoom = () => {
               ) : (
                 messages?.map((msg, index) => {
                   const isOwn = msg.user_id === currentUserId;
+                  const time = msg.created_at
+                    ? new Date(msg.created_at).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : "";
                   return (
                     <View
                       key={index}
                       style={{
                         backgroundColor: isOwn ? "#3b82f6" : "#1e293b",
-                        paddingHorizontal: 14,
-                        paddingVertical: 10,
+                        paddingHorizontal: 12,
+                        paddingTop: 8,
+                        paddingBottom: 6,
                         borderRadius: 12,
                         marginBottom: 8,
                         alignSelf: isOwn ? "flex-end" : "flex-start",
@@ -278,10 +348,40 @@ const WatchPartyRoom = () => {
                       }}
                     >
                       <Text
-                        style={{ color: "white", fontSize: 15, lineHeight: 22 }}
+                        style={{ color: "white", fontSize: 15, lineHeight: 21 }}
                       >
                         {msg.content}
                       </Text>
+
+                      {/* Footer row: time + read ticks, WhatsApp style */}
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          justifyContent: "flex-end",
+                          marginTop: 2,
+                        }}
+                      >
+                        {!!time && (
+                          <Text
+                            style={{
+                              fontSize: 11,
+                              color: isOwn
+                                ? "rgba(255,255,255,0.65)"
+                                : "#64748b",
+                            }}
+                          >
+                            {time}
+                          </Text>
+                        )}
+                        {isOwn && (
+                          <MessageTicks
+                            message={msg}
+                            participants={participants}
+                            currentUserId={currentUserId}
+                          />
+                        )}
+                      </View>
                     </View>
                   );
                 })

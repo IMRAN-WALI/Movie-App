@@ -17,7 +17,6 @@ export function useTrendingNearby() {
     setPermissionDenied(false);
 
     try {
-      // Capture & save current location
       const location = await captureAndStoreUserLocation();
 
       if (!location) {
@@ -34,17 +33,31 @@ export function useTrendingNearby() {
       console.log(`📍 Location: ${location.latitude}, ${location.longitude}`);
       console.log(`📍 City: ${cityName}`);
 
-      // Fetch trending movies
       const results = await fetchTrendingNearby(
         location.latitude,
         location.longitude,
-        50000, // 50km radius
-        20, // Limit to 20 results
+        50000,
+        20,
       );
 
-      console.log(`🎬 Found ${results?.length || 0} movies`);
+      // 🔍 DEBUG: Check what we got
+      console.log("🎬 Raw results:", JSON.stringify(results, null, 2));
+      console.log("🎬 Results type:", typeof results);
+      console.log("🎬 Is array?", Array.isArray(results));
+      console.log("🎬 Results length:", results?.length);
 
       if (Array.isArray(results) && results.length > 0) {
+        // 🔍 Check each movie object structure
+        results.forEach((movie, index) => {
+          console.log(`🎬 Movie ${index}:`, {
+            id: movie.movie_id,
+            title: movie.title,
+            poster: movie.poster_url ? "Yes" : "No",
+            watchCount: movie.watch_count,
+            rating: movie.avg_rating,
+            allKeys: Object.keys(movie),
+          });
+        });
         setMovies(results);
       } else {
         console.log("ℹ️ No movies found nearby");
@@ -52,6 +65,7 @@ export function useTrendingNearby() {
       }
     } catch (err) {
       console.error("❌ Trending Nearby Error:", err);
+      console.error("❌ Error stack:", err?.stack);
       setMovies([]);
       setError(err?.message || "Failed to load trending movies.");
     } finally {
