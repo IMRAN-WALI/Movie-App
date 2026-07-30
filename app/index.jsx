@@ -13,11 +13,13 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../src/hooks/useAuth";
+import { useLanguage } from "../src/i18n/LanguageContext";
 import { signInWithGoogle } from "../src/lib/auth";
 import { isAuthRedirectSuppressed } from "../src/lib/authRedirectLock";
 
 export default function Landing() {
   const { session, loading } = useAuth();
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (!loading && session && !isAuthRedirectSuppressed()) {
@@ -28,10 +30,7 @@ export default function Landing() {
   const handleGoogleSignIn = async () => {
     const isExpoGo = Constants.appOwnership === "expo";
     if (isExpoGo) {
-      Alert.alert(
-        "Not available in Expo Go",
-        "Google Sign-In needs a development build to work properly. Use Email/Password for now — this will work automatically once you create your build.",
-      );
+      Alert.alert(t("landing_google_expo_title"), t("landing_google_expo_msg"));
       return;
     }
     try {
@@ -87,7 +86,7 @@ export default function Landing() {
               textAlign: "center",
             }}
           >
-            Movie App
+            {t("landing_title")}
           </Text>
           <Text
             style={{
@@ -98,8 +97,7 @@ export default function Landing() {
               lineHeight: 22,
             }}
           >
-            Watch together, discover your taste, and share the moments that
-            matter.
+            {t("landing_subtitle")}
           </Text>
         </View>
 
@@ -114,7 +112,7 @@ export default function Landing() {
             }}
           >
             <Text style={{ color: "#4338ca", fontWeight: "700", fontSize: 16 }}>
-              Log In
+              {t("landing_login")}
             </Text>
           </Pressable>
 
@@ -129,7 +127,7 @@ export default function Landing() {
             }}
           >
             <Text style={{ color: "white", fontWeight: "700", fontSize: 16 }}>
-              Create Account
+              {t("landing_signup")}
             </Text>
           </Pressable>
 
@@ -156,7 +154,7 @@ export default function Landing() {
                 letterSpacing: 1,
               }}
             >
-              OR
+              {t("landing_or")}
             </Text>
 
             <View
@@ -197,7 +195,7 @@ export default function Landing() {
                 fontWeight: "700",
               }}
             >
-              Continue with Google
+              {t("landing_google")}
             </Text>
           </Pressable>
         </View>

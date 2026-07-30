@@ -15,11 +15,12 @@ import {
   fetchSavedMovies,
   toggleSavedMovie,
 } from "../../src/services/savedService";
+import { useLanguage } from "../../src/i18n/LanguageContext";
 
 const Saved = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const { t } = useLanguage();
   const load = useCallback(async () => {
     setLoading(true);
     try {
@@ -60,10 +61,10 @@ const Saved = () => {
           style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: 8 }}
         >
           <Text style={{ color: "white", fontSize: 28, fontWeight: "800" }}>
-            Saved
+            {t("saved_title")}
           </Text>
           <Text style={{ color: "rgba(255,255,255,0.8)", marginTop: 4 }}>
-            Your bookmarked movies and watchlist.
+            {t("saved_subtitle")}
           </Text>
         </View>
 
@@ -96,8 +97,7 @@ const Saved = () => {
                 textAlign: "center",
               }}
             >
-              Nothing saved yet — tap the bookmark icon on a movie to add it
-              here.
+              {t("saved_empty")}
             </Text>
           </View>
         )}

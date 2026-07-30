@@ -13,17 +13,20 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { searchMovies } from "../../src/services/movieService";
+import { useLanguage } from "../../src/i18n/LanguageContext";
 
 const Search = () => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (!query.trim()) {
       setResults([]);
       return;
     }
+
     setLoading(true);
     const timeout = setTimeout(async () => {
       try {
@@ -31,6 +34,8 @@ const Search = () => {
         setResults(data);
       } catch (e) {
         console.error("search error:", e);
+        setResults([]);
+        // optional: Alert.alert("Search failed", e.message);
       } finally {
         setLoading(false);
       }
@@ -49,10 +54,10 @@ const Search = () => {
       <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
         <View style={{ paddingHorizontal: 20, paddingTop: 12 }}>
           <Text style={{ color: "white", fontSize: 28, fontWeight: "800" }}>
-            Discover
+            {t("search_title")}
           </Text>
           <Text style={{ color: "rgba(255,255,255,0.8)", marginTop: 4 }}>
-            Find movies, actors, and curated collections.
+            {t("search_subtitle")}
           </Text>
 
           <View
@@ -70,7 +75,7 @@ const Search = () => {
             <TextInput
               value={query}
               onChangeText={setQuery}
-              placeholder="Search movies..."
+              placeholder={t("search_placeholder")}
               placeholderTextColor="rgba(255,255,255,0.6)"
               style={{ flex: 1, color: "white", marginLeft: 10, fontSize: 16 }}
               autoCapitalize="none"
@@ -124,7 +129,7 @@ const Search = () => {
             style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
           >
             <Text style={{ color: "rgba(255,255,255,0.6)" }}>
-              No movies found for {query}
+              {t("search_no_results")} {query}
             </Text>
           </View>
         )}

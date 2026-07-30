@@ -3,12 +3,21 @@ import { supabase } from "../lib/supabase";
 export async function searchMovies(query) {
   if (!query || query.trim().length === 0) return [];
 
+  const q = query.trim();
+
   const { data, error } = await supabase
     .from("movies")
-    .select("id, title, poster_url, release_date, genres")
-    .ilike("title", `%${query.trim()}%`)
-    .limit(24);
+    .select(
+      "id, title, poster_url, release_date, genres, vote_average, runtime",
+    )
+    .ilike("title", `%${q}%`)
+    .order("vote_average", { ascending: false, nullsFirst: false })
+    .limit(30);
 
-  if (error) throw error;
-  return data;
+  if (error) {
+    console.error("searchMovies error:", error);
+    throw error;
+  }
+
+  return data ?? [];
 }

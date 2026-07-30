@@ -73,6 +73,7 @@ export default function Layout() {
         <Stack.Screen name="trending/index" />
         <Stack.Screen name="profile/history" />
         <Stack.Screen name="profile/language" />
+        <Stack.Screen name="profile/edit" />
       </Stack>
     </LanguageProvider>
   );

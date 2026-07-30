@@ -1,74 +1,82 @@
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import React from "react";
+import React, { useMemo } from "react";
 import { Image, Pressable, ScrollView, Text, View } from "react-native";
 import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-
-const FEATURE_LINKS = [
-  {
-    key: "watch-party",
-    label: "Watch Party",
-    subtitle: "Sync up and watch with friends",
-    icon: "people-outline",
-    colors: ["#4f46e5", "#3730a3"],
-    onPress: () => router.push("/watch-party"),
-  },
-  {
-    key: "taste-dna",
-    label: "Taste DNA",
-    subtitle: "See your personalized taste graph",
-    icon: "analytics-outline",
-    colors: ["#7c3aed", "#4f46e5"],
-    onPress: () => router.push("/taste-dna"),
-  },
-  {
-    key: "clips",
-    label: "Clips & Memes",
-    subtitle: "Browse and share 10s clips",
-    icon: "film-outline",
-    colors: ["#0ea5e9", "#4338ca"],
-    onPress: () => router.push("/clips/feed"),
-  },
-  {
-    key: "trending",
-    label: "Trending Near You",
-    subtitle: "What people nearby are watching",
-    icon: "location-outline",
-    colors: ["#f97316", "#c026d3"],
-    onPress: () => router.push("/trending"),
-  },
-];
-
-const HIGHLIGHT_CARDS = [
-  {
-    key: "social-night",
-    title: "Social Night",
-    subtitle: "Plan a cozy watch session with friends",
-    icon: "sparkles",
-    colors: ["#fb923c", "#f43f5e"],
-  },
-  {
-    key: "curated-picks",
-    title: "Curated Picks",
-    subtitle: "Fresh recommendations tailored for you",
-    icon: "film",
-    colors: ["#22c55e", "#0f766e"],
-  },
-  {
-    key: "local-favorites",
-    title: "Local Favorites",
-    subtitle: "Explore what’s trending around you",
-    icon: "location",
-    colors: ["#38bdf8", "#6366f1"],
-  },
-];
+import { useLanguage } from "../../src/i18n/LanguageContext";
 
 const Home = () => {
   const insets = useSafeAreaInsets();
+  const { t } = useLanguage();
+
+  const FEATURE_LINKS = useMemo(
+    () => [
+      {
+        key: "watch-party",
+        label: t("home_watch_party"),
+        subtitle: t("home_watch_party_sub"),
+        icon: "people-outline",
+        colors: ["#4f46e5", "#3730a3"],
+        onPress: () => router.push("/watch-party"),
+      },
+      {
+        key: "taste-dna",
+        label: t("home_taste_dna"),
+        subtitle: t("home_taste_dna_sub"),
+        icon: "analytics-outline",
+        colors: ["#7c3aed", "#4f46e5"],
+        onPress: () => router.push("/taste-dna"),
+      },
+      {
+        key: "clips",
+        label: t("home_clips"),
+        subtitle: t("home_clips_sub"),
+        icon: "film-outline",
+        colors: ["#0ea5e9", "#4338ca"],
+        onPress: () => router.push("/clips/feed"),
+      },
+      {
+        key: "trending",
+        label: t("home_trending"),
+        subtitle: t("home_trending_sub"),
+        icon: "location-outline",
+        colors: ["#f97316", "#c026d3"],
+        onPress: () => router.push("/trending"),
+      },
+    ],
+    [t],
+  );
+
+  const HIGHLIGHT_CARDS = useMemo(
+    () => [
+      {
+        key: "social-night",
+        title: t("home_social_night"),
+        subtitle: t("home_social_night_sub"),
+        icon: "sparkles",
+        colors: ["#fb923c", "#f43f5e"],
+      },
+      {
+        key: "curated-picks",
+        title: t("home_curated_picks"),
+        subtitle: t("home_curated_picks_sub"),
+        icon: "film",
+        colors: ["#22c55e", "#0f766e"],
+      },
+      {
+        key: "local-favorites",
+        title: t("home_local_favorites"),
+        subtitle: t("home_local_favorites_sub"),
+        icon: "location",
+        colors: ["#38bdf8", "#6366f1"],
+      },
+    ],
+    [t],
+  );
 
   return (
     <LinearGradient
@@ -154,7 +162,7 @@ const Home = () => {
               }}
             >
               <Text style={{ color: "white", fontSize: 24, fontWeight: "800" }}>
-                Movie night, elevated
+                {t("home_tagline")}
               </Text>
               <View
                 style={{
@@ -167,7 +175,7 @@ const Home = () => {
                 <Text
                   style={{ color: "white", fontWeight: "700", fontSize: 12 }}
                 >
-                  NEW
+                  {t("home_new_badge")}
                 </Text>
               </View>
             </View>
@@ -179,15 +187,14 @@ const Home = () => {
                 marginBottom: 16,
               }}
             >
-              Discover shared experiences, curated picks, and local favorites in
-              one beautiful hub.
+              {t("home_hero_subtitle")}
             </Text>
 
             <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
               {[
-                { label: "Personalized", icon: "sparkles" },
-                { label: "Social", icon: "people" },
-                { label: "Local", icon: "location" },
+                { label: t("home_chip_personalized"), icon: "sparkles" },
+                { label: t("home_chip_social"), icon: "people" },
+                { label: t("home_chip_local"), icon: "location" },
               ].map((item) => (
                 <View
                   key={item.label}
@@ -227,10 +234,10 @@ const Home = () => {
             }}
           >
             <Text style={{ color: "white", fontSize: 18, fontWeight: "700" }}>
-              Explore now
+              {t("home_explore_now")}
             </Text>
             <Text style={{ color: "rgba(255,255,255,0.7)", fontSize: 12 }}>
-              4 experiences
+              {t("home_experiences_count")}
             </Text>
           </View>
 
@@ -268,7 +275,9 @@ const Home = () => {
                   <Ionicons name={card.icon} size={18} color="white" />
                 </View>
                 <View>
-                  <Text style={{ color: "white", fontWeight: "700", fontSize: 14 }}>
+                  <Text
+                    style={{ color: "white", fontWeight: "700", fontSize: 14 }}
+                  >
                     {card.title}
                   </Text>
                   <Text
@@ -355,7 +364,7 @@ const Home = () => {
                 textAlign: "center",
               }}
             >
-              Your next favorite movie moment is just a tap away.
+              {t("home_footer")}
             </Text>
           </View>
         </ScrollView>

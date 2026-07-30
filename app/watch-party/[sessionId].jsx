@@ -129,6 +129,42 @@ const WatchPartyRoom = () => {
     }
   }, [messages?.length]);
 
+  // Log this watch-party session into the user's watch history
+  useEffect(() => {
+    if (!party?.movie_id || !currentUserId) return;
+
+    const logWatchHistory = async () => {
+      // check if there's already an in-progress entry for this movie
+      const { data: existing } = await supabase
+        .from("watch_history")
+        .select("id")
+        .eq("user_id", currentUserId)
+        .eq("movie_id", party.movie_id)
+        .eq("completed", false)
+        .order("watched_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (existing) {
+        // just bump the timestamp so it shows as "recently watched"
+        await supabase
+          .from("watch_history")
+          .update({ watched_at: new Date().toISOString() })
+          .eq("id", existing.id);
+      } else {
+        await supabase.from("watch_history").insert({
+          user_id: currentUserId,
+          movie_id: party.movie_id,
+          progress_seconds: 0,
+          completed: false,
+          watched_at: new Date().toISOString(),
+        });
+      }
+    };
+
+    logWatchHistory();
+  }, [party?.movie_id, currentUserId]);
+
   const handleLeave = async () => {
     if (sessionId) await leaveWatchParty(sessionId);
     router.back();

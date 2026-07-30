@@ -1,5 +1,5 @@
 export default {
-  // Profile screen
+  // Profile
   profile_movie_fan: "Movie Fan",
   profile_watched: "Watched",
   profile_rated: "Rated",
@@ -19,12 +19,12 @@ export default {
   profile_sign_out_error: "Could not sign out. Please try again.",
   profile_app_version: "Movie App v1.0.0",
 
-  // Language screen
+  // Language
   language_title: "App Language",
   language_subtitle: "Choose the language for buttons, menus, and labels",
   language_saved_toast: "Language updated",
 
-  // Watch History screen
+  // History
   history_title: "Watch History",
   history_subtitle: "Everything you've watched, in one place",
   history_empty_title: "No watch history yet",
@@ -39,4 +39,175 @@ export default {
   history_clear_all_title: "Clear watch history",
   history_clear_all_message:
     "This will remove your entire watch history. This can't be undone.",
+
+  // Home
+  home_tagline: "Movie night, elevated",
+  home_new_badge: "NEW",
+  home_hero_subtitle:
+    "Discover shared experiences, curated picks, and local favorites in one beautiful hub.",
+  home_chip_personalized: "Personalized",
+  home_chip_social: "Social",
+  home_chip_local: "Local",
+  home_explore_now: "Explore now",
+  home_experiences_count: "4 experiences",
+  home_footer: "Your next favorite movie moment is just a tap away.",
+  home_watch_party: "Watch Party",
+  home_watch_party_sub: "Sync up and watch with friends",
+  home_taste_dna: "Taste DNA",
+  home_taste_dna_sub: "See your personalized taste graph",
+  home_clips: "Clips & Memes",
+  home_clips_sub: "Browse and share 10s clips",
+  home_trending: "Trending Near You",
+  home_trending_sub: "What people nearby are watching",
+  home_social_night: "Social Night",
+  home_social_night_sub: "Plan a cozy watch session with friends",
+  home_curated_picks: "Curated Picks",
+  home_curated_picks_sub: "Fresh recommendations tailored for you",
+  home_local_favorites: "Local Favorites",
+  home_local_favorites_sub: "Explore what's trending around you",
+
+  // Search
+  search_title: "Discover",
+  search_subtitle: "Find movies, actors, and curated collections.",
+  search_placeholder: "Search movies...",
+  search_empty_hint: "Start typing to search the movie catalog",
+  search_no_results: "No movies found for",
+
+  // Saved
+  saved_title: "Saved",
+  saved_subtitle: "Your bookmarked movies and watchlist.",
+  saved_empty:
+    "Nothing saved yet — tap the bookmark icon on a movie to add it here.",
+
+  // Landing
+  landing_title: "Movie App",
+  landing_subtitle:
+    "Watch together, discover your taste, and share the moments that matter.",
+  landing_login: "Log In",
+  landing_signup: "Create Account",
+  landing_or: "OR",
+  landing_google: "Continue with Google",
+  landing_google_expo_title: "Not available in Expo Go",
+  landing_google_expo_msg:
+    "Google Sign-In needs a development build to work properly. Use Email/Password for now.",
+
+  // Auth
+  auth_login_title: "Welcome back",
+  auth_login_subtitle: "Sign in to continue",
+  auth_email: "Email address",
+  auth_password: "Password",
+  auth_password_hint: "At least 6 characters",
+  auth_login_btn: "Log In",
+  auth_no_account: "Don't have an account?",
+  auth_signup_link: "Sign up",
+  auth_forgot: "Forgot password?",
+  auth_signup_title: "Create Account",
+  auth_signup_subtitle: "Join the community",
+  auth_signup_btn: "Create Account",
+  auth_have_account: "Already have an account?",
+  auth_login_link: "Log in",
+  auth_please_wait: "Please Wait...",
+  auth_rate_limit: "Rate limit active. Try again in",
+  auth_why_cant: "Why can't I sign up?",
+
+  // Movie
+  movie_not_found: "Movie not found.",
+  movie_watch_party: "Watch Party",
+  movie_make_clip: "Make Clip",
+  movie_rate: "Rate this movie",
+  movie_load_error: "Couldn't load movie",
+  movie_rate_error: "Couldn't save rating",
+  movie_save_error: "Couldn't update saved list",
+
+  // Watch Party
+  party_title: "Watch Party",
+  party_subtitle: "Watch together, in sync, with voice and chat.",
+  party_host: "Host a Party",
+  party_join: "Join Party",
+  party_or_join: "— or join with a code —",
+  party_code_placeholder: "ABC123",
+  party_tip: "💡 Tip: Share the invite code with friends to join your party",
+  party_pick_movie: "Pick a movie first",
+  party_pick_movie_msg: 'Open a movie and choose "Watch Party" to host one.',
+  party_invalid_code: "Enter a valid invite code",
+  party_join_error: "Couldn't join party",
+  party_create_error: "Couldn't create party",
+  party_not_found: "Party not found",
+  party_go_back: "Go Back",
+  party_loading: "Loading party...",
+  party_joined: "joined",
+  party_no_messages: "No messages yet",
+  party_start_chat: "Start the conversation! 💬",
+  party_type_message: "Type a message...",
+  party_host_for: "Host a watch party for this movie",
+  party_ready: "🎬 Party Ready",
+  party_copied: "Copied!",
+  party_invite_share: "Join my Watch Party!",
+
+  // Clips
+  clips_new: "New Clip",
+  clips_pick_video: "Tap to choose a video",
+  clips_caption: "Add a caption…",
+  clips_post: "Post Clip",
+  clips_empty: "No clips yet — be the first to post one.",
+  clips_permission: "Permission needed",
+  clips_permission_msg: "Allow access to your media library to pick a video.",
+  clips_pick_first: "Pick a video first",
+  clips_missing_movie: "Missing movie",
+  clips_missing_movie_msg: "Open this screen from a movie page.",
+
+  // Taste DNA
+  taste_title: "Taste DNA",
+  taste_recalculate: "Recalculate",
+  taste_building: "Building your profile…",
+  taste_genres: "Genres",
+  taste_directors: "Directors you gravitate toward",
+  taste_eras: "Favorite eras",
+  taste_based_on: "Based on",
+  taste_rated_movies: "rated or completed movies",
+  taste_no_directors:
+    "Watch and rate a few more movies to reveal director affinities.",
+
+  // Trending
+  trending_in: "Trending in",
+  trending_nearby: "Nearby",
+  trending_loading: "Loading trending movies...",
+  trending_location_needed: "Location Access Needed",
+  trending_location_msg:
+    "Please enable location to see trending movies near you",
+  trending_try_again: "Try Again",
+  trending_empty: "No trending movies found nearby",
+  trending_refresh: "Refresh",
+  trending_badge: "🔥 Trending",
+  trending_views: "views",
+
+  // Tabs
+  tab_home: "Home",
+  tab_search: "Search",
+  tab_saved: "Saved",
+  tab_profile: "Profile",
+
+  // Common
+  common_error: "Error",
+  common_try_again: "Try again",
+  common_loading: "Loading...",
+  common_cancel: "Cancel",
+
+  edit_title: "Edit Profile",
+  edit_save: "Save",
+  edit_save_changes: "Save Changes",
+  edit_change_photo: "Change Photo",
+  edit_display_name: "Display Name",
+  edit_display_name_placeholder: "How should we call you?",
+  edit_bio: "Bio",
+  edit_bio_placeholder: "A short line about your movie taste…",
+  edit_email: "Email",
+  edit_email_hint: "Email cannot be changed here.",
+  edit_permission_title: "Permission needed",
+  edit_permission_msg: "Allow photo library access to change your avatar.",
+  edit_name_required_title: "Name required",
+  edit_name_required_msg: "Please enter a display name.",
+  edit_saved_title: "Profile updated",
+  edit_saved_msg: "Your changes have been saved.",
+  edit_save_error: "Could not save profile. Try again.",
 };
