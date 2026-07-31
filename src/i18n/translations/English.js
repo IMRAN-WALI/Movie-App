@@ -49,7 +49,7 @@ export default {
   home_chip_social: "Social",
   home_chip_local: "Local",
   home_explore_now: "Explore now",
-  home_experiences_count: "4 experiences",
+  home_experiences_count: "Experiences",
   home_footer: "Your next favorite movie moment is just a tap away.",
   home_watch_party: "Watch Party",
   home_watch_party_sub: "Sync up and watch with friends",

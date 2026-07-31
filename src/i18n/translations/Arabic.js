@@ -45,7 +45,7 @@ export default {
   home_chip_social: "اجتماعي",
   home_chip_local: "محلي",
   home_explore_now: "استكشف الآن",
-  home_experiences_count: "4 تجارب",
+  home_experiences_count: "تجارب",
   home_footer: "لحظتك السينمائية المفضلة التالية على بعد نقرة واحدة.",
   home_watch_party: "حفلة مشاهدة",
   home_watch_party_sub: "同步 وشاهد مع الأصدقاء",

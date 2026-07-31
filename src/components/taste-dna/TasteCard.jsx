@@ -23,10 +23,13 @@ const TasteCard = ({ profile }) => {
     ]).start();
   }, [fade, translateY]);
 
-  const genreEntries = Object.entries(profile.genre_breakdown).sort(
+  // ✅ Log profile data to debug
+  console.log("🎨 TasteCard rendering with profile:", profile?.genre_breakdown);
+
+  const genreEntries = Object.entries(profile?.genre_breakdown || {}).sort(
     (a, b) => b[1] - a[1],
   );
-  const eraEntries = Object.entries(profile.era_breakdown).sort(
+  const eraEntries = Object.entries(profile?.era_breakdown || {}).sort(
     (a, b) => b[1] - a[1],
   );
 
@@ -56,14 +59,19 @@ const TasteCard = ({ profile }) => {
             marginBottom: 20,
           }}
         >
-          {profile.top_summary || "Building your profile…"}
+          {profile?.top_summary || "Building your profile…"}
         </Text>
 
         <Text style={{ color: "white", fontWeight: "700", marginBottom: 10 }}>
           Genres
         </Text>
         {genreEntries.map(([genre, pct], i) => (
-          <GenreBar key={genre} label={genre} percentage={pct} index={i} />
+          <GenreBar
+            key={genre}
+            label={genre}
+            percentage={pct / 100}
+            index={i}
+          />
         ))}
 
         <Text
@@ -76,7 +84,7 @@ const TasteCard = ({ profile }) => {
         >
           Directors you gravitate toward
         </Text>
-        <DirectorAffinity directors={profile.director_affinity} />
+        <DirectorAffinity directors={profile?.director_affinity || {}} />
 
         {eraEntries.length > 0 && (
           <>
@@ -102,7 +110,7 @@ const TasteCard = ({ profile }) => {
                   }}
                 >
                   <Text style={{ color: "white" }}>
-                    {era} · {Math.round(pct * 100)}%
+                    {era} · {Math.round(pct)}%
                   </Text>
                 </View>
               ))}
@@ -117,7 +125,7 @@ const TasteCard = ({ profile }) => {
             marginTop: 20,
           }}
         >
-          Based on {profile.sample_size} rated or completed movies
+          Based on {profile?.sample_size || 0} rated or completed movies
         </Text>
       </LinearGradient>
     </Animated.View>

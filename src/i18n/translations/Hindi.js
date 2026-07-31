@@ -45,7 +45,7 @@ export default {
   home_chip_social: "सोशल",
   home_chip_local: "स्थानीय",
   home_explore_now: "अभी खोजें",
-  home_experiences_count: "4 अनुभव",
+  home_experiences_count: "अनुभव",
   home_footer: "आपका अगला पसंदीदा मूवी पल बस एक टैप दूर है।",
   home_watch_party: "वॉच पार्टी",
   home_watch_party_sub: "दोस्तों के साथ मिलकर देखें",

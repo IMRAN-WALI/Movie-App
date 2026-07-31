@@ -1,4 +1,4 @@
-import { invokeEdgeFunction, supabase } from "../lib/supabase";
+import { supabase } from "../lib/supabase";
 
 export async function fetchTasteProfile() {
   const {
@@ -16,9 +16,26 @@ export async function fetchTasteProfile() {
   return data;
 }
 
-/** Triggers the taste-dna-compute edge function to recalculate the graph. */
+// ✅ NOW CALLS DATABASE FUNCTION (not Edge Function)
 export async function recomputeTasteProfile() {
-  return invokeEdgeFunction("taste-dna-compute", {});
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  console.log("🔄 Recomputing taste profile for user:", user.id);
+
+  const { data, error } = await supabase.rpc("recompute_taste_profile", {
+    p_user_id: user.id,
+  });
+
+  if (error) {
+    console.error("❌ recomputeTasteProfile RPC error:", error);
+    throw error;
+  }
+
+  console.log("✅ Taste profile recomputed:", data);
+  return data;
 }
 
 export async function rateMovie(movieId, score) {
@@ -31,14 +48,14 @@ export async function rateMovie(movieId, score) {
     {
       user_id: user.id,
       movie_id: movieId,
-      score,
-      updated_at: new Date().toISOString(),
+      rating: score,
     },
     { onConflict: "user_id,movie_id" },
   );
 
   if (error) throw error;
 
+  // Fire and forget - recompute in background
   recomputeTasteProfile().catch((e) =>
     console.error("recomputeTasteProfile failed:", e),
   );

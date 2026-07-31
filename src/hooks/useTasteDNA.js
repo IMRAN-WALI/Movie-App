@@ -10,34 +10,35 @@ export function useTasteDNA() {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const existing = await fetchTasteProfile();
-        if (cancelled) return;
+  const loadProfile = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      console.log("🔍 Fetching taste profile...");
+      let existing = await fetchTasteProfile();
+      console.log("📊 Existing profile:", existing);
 
-        if (existing) {
-          setProfile(existing);
-          setLoading(false);
-        } else {
-          const computed = await recomputeTasteProfile();
-          if (!cancelled) setProfile(computed);
-          setLoading(false);
-        }
-      } catch (e) {
-        if (!cancelled) {
-          setError(
-            e instanceof Error ? e.message : "Failed to load taste profile",
-          );
-          setLoading(false);
-        }
+      if (existing) {
+        setProfile(existing);
+        setLoading(false);
+        return;
       }
-    })();
-    return () => {
-      cancelled = true;
-    };
+
+      console.log("🔄 No profile found, recomputing...");
+      const computed = await recomputeTasteProfile();
+      console.log("✅ Computed profile:", computed);
+      setProfile(computed);
+    } catch (e) {
+      console.error("❌ loadProfile error:", e);
+      setError(e instanceof Error ? e.message : "Failed to load taste profile");
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    loadProfile();
+  }, [loadProfile]);
 
   const refresh = useCallback(async () => {
     setRefreshing(true);

@@ -1,6 +1,5 @@
 /* global Deno */
 /* eslint-disable import/no-unresolved */
-// supabase/functions/trending-nearby/index.js
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -35,9 +34,7 @@ Deno.serve(async (req) => {
     }
 
     // Create Supabase client
-    const supabase = createClient(
-      
-    );
+    const supabase = createClient();
 
     // Get nearby profiles using PostGIS
     const { data: nearbyProfiles, error: nearbyError } = await supabase.rpc(

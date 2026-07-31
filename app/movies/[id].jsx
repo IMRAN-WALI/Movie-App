@@ -259,23 +259,35 @@ const MovieDetails = () => {
           >
             Rate this movie
           </Text>
-          <View style={{ flexDirection: "row", gap: 8 }}>
-            {[2, 4, 6, 8, 10].map((score) => (
-              <Pressable
-                key={score}
-                onPress={() => handleRate(score)}
+          <View style={{ flexDirection: "row", gap: 10, alignItems: "center" }}>
+            {[1, 2, 3, 4, 5].map((starIndex) => {
+              const starValue = starIndex * 2; 
+              const filled = myRating >= starValue;
+              return (
+                <Pressable
+                  key={starIndex}
+                  onPress={() => handleRate(starValue)}
+                  hitSlop={8}
+                >
+                  <Ionicons
+                    name={filled ? "star" : "star-outline"}
+                    size={34}
+                    color={filled ? "#facc15" : "#475569"}
+                  />
+                </Pressable>
+              );
+            })}
+            {myRating != null && (
+              <Text
                 style={{
-                  paddingVertical: 10,
-                  paddingHorizontal: 14,
-                  borderRadius: 12,
-                  backgroundColor: myRating === score ? "#4f46e5" : "#1e293b",
+                  color: "#94a3b8",
+                  marginLeft: 6,
+                  fontSize: 13,
                 }}
               >
-                <Text style={{ color: "white", fontWeight: "600" }}>
-                  {score}
-                </Text>
-              </Pressable>
-            ))}
+                {myRating}/10
+              </Text>
+            )}
           </View>
         </View>
       </ScrollView>

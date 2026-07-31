@@ -57,8 +57,9 @@ const Home = () => {
         key: "social-night",
         title: t("home_social_night"),
         subtitle: t("home_social_night_sub"),
-        icon: "sparkles",
+        icon: "people",
         colors: ["#fb923c", "#f43f5e"],
+        onPress: () => router.push("/watch-party"),
       },
       {
         key: "curated-picks",
@@ -66,6 +67,7 @@ const Home = () => {
         subtitle: t("home_curated_picks_sub"),
         icon: "film",
         colors: ["#22c55e", "#0f766e"],
+        onPress: () => router.push("/taste-dna"),
       },
       {
         key: "local-favorites",
@@ -73,6 +75,7 @@ const Home = () => {
         subtitle: t("home_local_favorites_sub"),
         icon: "location",
         colors: ["#38bdf8", "#6366f1"],
+        onPress: () => router.push("/trending"),
       },
     ],
     [t],
@@ -236,11 +239,13 @@ const Home = () => {
             <Text style={{ color: "white", fontSize: 18, fontWeight: "700" }}>
               {t("home_explore_now")}
             </Text>
+            {/* ✅ "4" hata diya, sirf "experiences" rakha */}
             <Text style={{ color: "rgba(255,255,255,0.7)", fontSize: 12 }}>
               {t("home_experiences_count")}
             </Text>
           </View>
 
+          {/* Highlight Cards */}
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -248,53 +253,68 @@ const Home = () => {
             style={{ marginBottom: 14 }}
           >
             {HIGHLIGHT_CARDS.map((card) => (
-              <LinearGradient
-                key={card.key}
-                colors={card.colors}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={{
-                  width: 170,
-                  borderRadius: 18,
-                  padding: 14,
-                  marginRight: 10,
-                  minHeight: 110,
-                  justifyContent: "space-between",
-                }}
-              >
-                <View
+              <Pressable key={card.key} onPress={card.onPress}>
+                <LinearGradient
+                  colors={card.colors}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
                   style={{
-                    width: 36,
-                    height: 36,
+                    width: 170,
                     borderRadius: 18,
-                    backgroundColor: "rgba(255,255,255,0.2)",
-                    alignItems: "center",
-                    justifyContent: "center",
+                    padding: 14,
+                    marginRight: 10,
+                    minHeight: 110,
+                    justifyContent: "space-between",
                   }}
                 >
-                  <Ionicons name={card.icon} size={18} color="white" />
-                </View>
-                <View>
-                  <Text
-                    style={{ color: "white", fontWeight: "700", fontSize: 14 }}
-                  >
-                    {card.title}
-                  </Text>
-                  <Text
+                  <View
                     style={{
-                      color: "rgba(255,255,255,0.86)",
-                      fontSize: 12,
-                      marginTop: 4,
-                      lineHeight: 16,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "space-between",
                     }}
                   >
-                    {card.subtitle}
-                  </Text>
-                </View>
-              </LinearGradient>
+                    <View
+                      style={{
+                        width: 36,
+                        height: 36,
+                        borderRadius: 18,
+                        backgroundColor: "rgba(255,255,255,0.2)",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Ionicons name={card.icon} size={18} color="white" />
+                    </View>
+                    <Text style={{ fontSize: 20 }}>{card.emoji}</Text>
+                  </View>
+                  <View>
+                    <Text
+                      style={{
+                        color: "white",
+                        fontWeight: "700",
+                        fontSize: 14,
+                      }}
+                    >
+                      {card.title}
+                    </Text>
+                    <Text
+                      style={{
+                        color: "rgba(255,255,255,0.86)",
+                        fontSize: 12,
+                        marginTop: 4,
+                        lineHeight: 16,
+                      }}
+                    >
+                      {card.subtitle}
+                    </Text>
+                  </View>
+                </LinearGradient>
+              </Pressable>
             ))}
           </ScrollView>
 
+          {/* Feature Links */}
           <View>
             {FEATURE_LINKS.map((feature) => (
               <Pressable

@@ -45,7 +45,7 @@ export default {
   home_chip_social: "سوشل",
   home_chip_local: "مقامی",
   home_explore_now: "ابھی دریافت کریں",
-  home_experiences_count: "4 تجربات",
+  home_experiences_count: " تجربات",
   home_footer: "آپ کا اگلا پسندیدہ مووی لمحہ صرف ایک ٹیپ دور ہے۔",
   home_watch_party: "واچ پارٹی",
   home_watch_party_sub: "دوستوں کے ساتھ مل کر دیکھیں",
