@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  ImageBackground,
   Pressable,
   Text,
   View,
@@ -52,154 +53,161 @@ export default function Landing() {
   }
 
   return (
-    <LinearGradient
-      colors={["#4f46e5", "#6366f1", "#312e81"]}
-      start={{ x: 0.1, y: 0 }}
-      end={{ x: 0.9, y: 1 }}
+    <ImageBackground
+      source={require("../assets/Images/Landing.png")}
       style={{ flex: 1 }}
+      resizeMode="cover"
     >
-      <SafeAreaView style={{ flex: 1, paddingHorizontal: 28 }}>
-        <View
-          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-        >
+      <LinearGradient
+        colors={[
+          "rgba(79,70,229,0.75)",
+          "rgba(99,102,241,0.7)",
+          "rgba(49,46,129,0.8)",
+        ]}
+        start={{ x: 0.1, y: 0 }}
+        end={{ x: 0.9, y: 1 }}
+        style={{ flex: 1 }}
+      >
+        <SafeAreaView style={{ flex: 1, paddingHorizontal: 28 }}>
           <View
-            style={{
-              width: 110,
-              height: 110,
-              borderRadius: 32,
-              backgroundColor: "rgba(255,255,255,0.12)",
-              alignItems: "center",
-              justifyContent: "center",
-              marginBottom: 24,
-            }}
-          >
-            <Image
-              source={require("../assets/Images/MainLogo.png")}
-              style={{ width: "70%", height: "70%", resizeMode: "contain" }}
-            />
-          </View>
-          <Text
-            style={{
-              color: "white",
-              fontSize: 34,
-              fontWeight: "800",
-              textAlign: "center",
-            }}
-          >
-            {t("landing_title")}
-          </Text>
-          <Text
-            style={{
-              color: "rgba(255,255,255,0.8)",
-              fontSize: 15,
-              textAlign: "center",
-              marginTop: 10,
-              lineHeight: 22,
-            }}
-          >
-            {t("landing_subtitle")}
-          </Text>
-        </View>
-
-        <View style={{ paddingBottom: 30, gap: 14 }}>
-          <Pressable
-            onPress={() => router.push("/auth/login")}
-            style={{
-              backgroundColor: "white",
-              borderRadius: 16,
-              paddingVertical: 16,
-              alignItems: "center",
-            }}
-          >
-            <Text style={{ color: "#4338ca", fontWeight: "700", fontSize: 16 }}>
-              {t("landing_login")}
-            </Text>
-          </Pressable>
-
-          <Pressable
-            onPress={() => router.push("/auth/signup")}
-            style={{
-              borderColor: "white",
-              borderWidth: 1.5,
-              borderRadius: 16,
-              paddingVertical: 16,
-              alignItems: "center",
-            }}
-          >
-            <Text style={{ color: "white", fontWeight: "700", fontSize: 16 }}>
-              {t("landing_signup")}
-            </Text>
-          </Pressable>
-
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              marginVertical: 20,
-            }}
+            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
           >
             <View
               style={{
-                flex: 1,
-                height: 1,
-                backgroundColor: "rgba(255,255,255,0.25)",
-              }}
-            />
-
-            <Text
-              style={{
-                color: "rgba(255,255,255,0.7)",
-                marginHorizontal: 15,
-                fontWeight: "600",
-                letterSpacing: 1,
+                width: 100,
+                height: 100,
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: 25,
               }}
             >
-              {t("landing_or")}
+              <Image
+                source={require("../assets/Images/MainLogo.png")}
+                style={{ width: "100%", height: "100%", resizeMode: "contain" }}
+              />
+            </View>
+            <Text
+              style={{
+                color: "white",
+                fontSize: 34,
+                fontWeight: "800",
+                textAlign: "center",
+              }}
+            >
+              {t("landing_title")}
             </Text>
+            <Text
+              style={{
+                color: "rgba(255,255,255,0.8)",
+                fontSize: 15,
+                textAlign: "center",
+                marginTop: 10,
+                lineHeight: 22,
+              }}
+            >
+              {t("landing_subtitle")}
+            </Text>
+          </View>
+
+          <View style={{ paddingBottom: 30, gap: 14 }}>
+            <Pressable
+              onPress={() => router.push("/auth/login")}
+              style={{
+                backgroundColor: "white",
+                borderRadius: 16,
+                paddingVertical: 16,
+                alignItems: "center",
+              }}
+            >
+              <Text
+                style={{ color: "#4338ca", fontWeight: "700", fontSize: 16 }}
+              >
+                {t("landing_login")}
+              </Text>
+            </Pressable>
+
+            <Pressable
+              onPress={() => router.push("/auth/signup")}
+              style={{
+                borderColor: "white",
+                borderWidth: 1.5,
+                borderRadius: 16,
+                paddingVertical: 16,
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ color: "white", fontWeight: "700", fontSize: 16 }}>
+                {t("landing_signup")}
+              </Text>
+            </Pressable>
 
             <View
               style={{
-                flex: 1,
-                height: 1,
-                backgroundColor: "rgba(255,255,255,0.25)",
-              }}
-            />
-          </View>
-
-          <Pressable
-            onPress={handleGoogleSignIn}
-            style={{
-              backgroundColor: "#FFFFFF",
-              borderRadius: 16,
-              paddingVertical: 16,
-              alignItems: "center",
-              justifyContent: "center",
-              flexDirection: "row",
-              shadowColor: "#000",
-              shadowOpacity: 0.15,
-              shadowRadius: 8,
-              elevation: 4,
-            }}
-          >
-            <AntDesign
-              name="google"
-              size={22}
-              color="#4338ca"
-              style={{ marginRight: 10 }}
-            />
-
-            <Text
-              style={{
-                color: "#4338ca",
-                fontSize: 16,
-                fontWeight: "700",
+                flexDirection: "row",
+                alignItems: "center",
+                marginVertical: 20,
               }}
             >
-              {t("landing_google")}
-            </Text>
-          </Pressable>
-        </View>
-      </SafeAreaView>
-    </LinearGradient>
+              <View
+                style={{
+                  flex: 1,
+                  height: 1,
+                  backgroundColor: "rgba(255,255,255,0.25)",
+                }}
+              />
+              <Text
+                style={{
+                  color: "rgba(255,255,255,0.7)",
+                  marginHorizontal: 15,
+                  fontWeight: "600",
+                  letterSpacing: 1,
+                }}
+              >
+                {t("landing_or")}
+              </Text>
+              <View
+                style={{
+                  flex: 1,
+                  height: 1,
+                  backgroundColor: "rgba(255,255,255,0.25)",
+                }}
+              />
+            </View>
+
+            <Pressable
+              onPress={handleGoogleSignIn}
+              style={{
+                backgroundColor: "#FFFFFF",
+                borderRadius: 16,
+                paddingVertical: 16,
+                alignItems: "center",
+                justifyContent: "center",
+                flexDirection: "row",
+                shadowColor: "#000",
+                shadowOpacity: 0.15,
+                shadowRadius: 8,
+                elevation: 4,
+              }}
+            >
+              <AntDesign
+                name="google"
+                size={22}
+                color="#4338ca"
+                style={{ marginRight: 10 }}
+              />
+              <Text
+                style={{
+                  color: "#4338ca",
+                  fontSize: 16,
+                  fontWeight: "700",
+                }}
+              >
+                {t("landing_google")}
+              </Text>
+            </Pressable>
+          </View>
+        </SafeAreaView>
+      </LinearGradient>
+    </ImageBackground>
   );
 }

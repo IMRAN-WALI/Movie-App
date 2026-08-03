@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  ImageBackground,
   Pressable,
   ScrollView,
   Text,
@@ -180,181 +181,193 @@ const Profile = () => {
       end={{ x: 0.9, y: 1 }}
       style={{ flex: 1 }}
     >
-      <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
-        <ScrollView
-          contentContainerStyle={{
-            padding: 20,
-            paddingBottom: insets.bottom + 100,
-          }}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Header */}
-          <View
-            style={{ alignItems: "center", marginTop: 10, marginBottom: 24 }}
+      {/* Profile.png Background Image */}
+      <ImageBackground
+        source={require("../../assets/Images/Profile.png")}
+        style={{ flex: 1 }}
+        resizeMode="cover"
+        imageStyle={{ opacity: 0.5 }}
+      >
+        <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
+          <ScrollView
+            contentContainerStyle={{
+              padding: 20,
+              paddingBottom: insets.bottom + 100,
+            }}
+            showsVerticalScrollIndicator={false}
           >
-            <View style={{ position: "relative" }}>
-              <View
-                style={{
-                  width: 96,
-                  height: 96,
-                  borderRadius: 48,
-                  backgroundColor: "rgba(255,255,255,0.15)",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderWidth: 2,
-                  borderColor: "rgba(255,255,255,0.25)",
-                  overflow: "hidden",
-                }}
-              >
-                {profile?.avatar_url ? (
-                  <Image
-                    source={{ uri: profile.avatar_url }}
-                    style={{ width: "100%", height: "100%" }}
-                  />
-                ) : (
-                  <Text
-                    style={{ color: "white", fontSize: 34, fontWeight: "800" }}
-                  >
-                    {initials}
-                  </Text>
-                )}
+            {/* Header */}
+            <View
+              style={{ alignItems: "center", marginTop: 10, marginBottom: 24 }}
+            >
+              <View style={{ position: "relative" }}>
+                <View
+                  style={{
+                    width: 96,
+                    height: 96,
+                    borderRadius: 48,
+                    backgroundColor: "rgba(255,255,255,0.15)",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderWidth: 2,
+                    borderColor: "rgba(255,255,255,0.25)",
+                    overflow: "hidden",
+                  }}
+                >
+                  {profile?.avatar_url ? (
+                    <Image
+                      source={{ uri: profile.avatar_url }}
+                      style={{ width: "100%", height: "100%" }}
+                    />
+                  ) : (
+                    <Text
+                      style={{
+                        color: "white",
+                        fontSize: 34,
+                        fontWeight: "800",
+                      }}
+                    >
+                      {initials}
+                    </Text>
+                  )}
+                </View>
+                <Pressable
+                  onPress={() => router.push("/profile/edit")}
+                  style={{
+                    position: "absolute",
+                    bottom: 0,
+                    right: 0,
+                    width: 30,
+                    height: 30,
+                    borderRadius: 15,
+                    backgroundColor: "#6366f1",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderWidth: 2,
+                    borderColor: "#312e81",
+                  }}
+                >
+                  <Ionicons name="pencil" size={14} color="white" />
+                </Pressable>
               </View>
-              <Pressable
-                onPress={() => router.push("/profile/edit")}
-                style={{
-                  position: "absolute",
-                  bottom: 0,
-                  right: 0,
-                  width: 30,
-                  height: 30,
-                  borderRadius: 15,
-                  backgroundColor: "#6366f1",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderWidth: 2,
-                  borderColor: "#312e81",
-                }}
-              >
-                <Ionicons name="pencil" size={14} color="white" />
-              </Pressable>
-            </View>
 
-            <Text
-              style={{
-                color: "white",
-                fontSize: 20,
-                fontWeight: "700",
-                marginTop: 14,
-              }}
-            >
-              {displayName}
-            </Text>
-            <Text
-              style={{
-                color: "rgba(255,255,255,0.6)",
-                marginTop: 4,
-                fontSize: 13,
-              }}
-            >
-              {email}
-            </Text>
-            {profile?.bio ? (
               <Text
                 style={{
-                  color: "rgba(255,255,255,0.75)",
-                  marginTop: 10,
-                  fontSize: 13,
-                  textAlign: "center",
-                  paddingHorizontal: 20,
-                  lineHeight: 18,
+                  color: "white",
+                  fontSize: 20,
+                  fontWeight: "700",
+                  marginTop: 14,
                 }}
               >
-                {profile.bio}
+                {displayName}
               </Text>
-            ) : null}
-          </View>
+              <Text
+                style={{
+                  color: "rgba(255,255,255,0.6)",
+                  marginTop: 4,
+                  fontSize: 13,
+                }}
+              >
+                {email}
+              </Text>
+              {profile?.bio ? (
+                <Text
+                  style={{
+                    color: "rgba(255,255,255,0.75)",
+                    marginTop: 10,
+                    fontSize: 13,
+                    textAlign: "center",
+                    paddingHorizontal: 20,
+                    lineHeight: 18,
+                  }}
+                >
+                  {profile.bio}
+                </Text>
+              ) : null}
+            </View>
 
-          {/* Stats */}
-          <View style={{ flexDirection: "row", gap: 10, marginBottom: 28 }}>
-            <StatCard
-              label={t("profile_watched")}
-              value={stats?.watchedCount ?? 0}
-              icon="film-outline"
-            />
-            <StatCard
-              label={t("profile_rated")}
-              value={stats?.ratingsCount ?? 0}
-              icon="star-outline"
-            />
-            <StatCard
-              label={t("profile_parties")}
-              value={stats?.partiesHosted ?? 0}
-              icon="people-outline"
-            />
-            <StatCard
-              label={t("profile_saved")}
-              value={stats?.savedCount ?? 0}
-              icon="bookmark-outline"
-            />
-          </View>
+            {/* Stats */}
+            <View style={{ flexDirection: "row", gap: 10, marginBottom: 28 }}>
+              <StatCard
+                label={t("profile_watched")}
+                value={stats?.watchedCount ?? 0}
+                icon="film-outline"
+              />
+              <StatCard
+                label={t("profile_rated")}
+                value={stats?.ratingsCount ?? 0}
+                icon="star-outline"
+              />
+              <StatCard
+                label={t("profile_parties")}
+                value={stats?.partiesHosted ?? 0}
+                icon="people-outline"
+              />
+              <StatCard
+                label={t("profile_saved")}
+                value={stats?.savedCount ?? 0}
+                icon="bookmark-outline"
+              />
+            </View>
 
-          {/* Activity */}
-          <MenuSection title={t("profile_your_activity")}>
-            <MenuItem
-              icon="time-outline"
-              label={t("profile_watch_history")}
-              onPress={() => router.push("/profile/history")}
-              isLast
-            />
-          </MenuSection>
+            {/* Activity */}
+            <MenuSection title={t("profile_your_activity")}>
+              <MenuItem
+                icon="time-outline"
+                label={t("profile_watch_history")}
+                onPress={() => router.push("/profile/history")}
+                isLast
+              />
+            </MenuSection>
 
-          {/* Account */}
-          <MenuSection title={t("profile_account")}>
-            <MenuItem
-              icon="person-outline"
-              label={t("profile_edit_profile")}
-              onPress={() => router.push("/profile/edit")}
-            />
-            <MenuItem
-              icon="lock-closed-outline"
-              label={t("profile_change_password")}
-              onPress={() => router.push("/auth/change-password")}
-            />
-            <MenuItem
-              icon="language-outline"
-              label={t("profile_app_language")}
-              onPress={() => router.push("/profile/language")}
-              isLast
-            />
-          </MenuSection>
+            {/* Account */}
+            <MenuSection title={t("profile_account")}>
+              <MenuItem
+                icon="person-outline"
+                label={t("profile_edit_profile")}
+                onPress={() => router.push("/profile/edit")}
+              />
+              <MenuItem
+                icon="lock-closed-outline"
+                label={t("profile_change_password")}
+                onPress={() => router.push("/auth/change-password")}
+              />
+              <MenuItem
+                icon="language-outline"
+                label={t("profile_app_language")}
+                onPress={() => router.push("/profile/language")}
+                isLast
+              />
+            </MenuSection>
 
-          <Pressable
-            onPress={handleSignOut}
-            style={{
-              borderColor: "rgba(248,113,113,0.6)",
-              borderWidth: 1.5,
-              borderRadius: 14,
-              paddingVertical: 14,
-              alignItems: "center",
-            }}
-          >
-            <Text style={{ color: "#f87171", fontWeight: "700" }}>
-              {t("profile_sign_out")}
+            <Pressable
+              onPress={handleSignOut}
+              style={{
+                borderColor: "rgba(248,113,113,0.6)",
+                borderWidth: 1.5,
+                borderRadius: 14,
+                paddingVertical: 14,
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ color: "#f87171", fontWeight: "700" }}>
+                {t("profile_sign_out")}
+              </Text>
+            </Pressable>
+
+            <Text
+              style={{
+                color: "rgba(255,255,255,0.3)",
+                fontSize: 11,
+                textAlign: "center",
+                marginTop: 20,
+              }}
+            >
+              {t("profile_app_version")}
             </Text>
-          </Pressable>
-
-          <Text
-            style={{
-              color: "rgba(255,255,255,0.3)",
-              fontSize: 11,
-              textAlign: "center",
-              marginTop: 20,
-            }}
-          >
-            {t("profile_app_version")}
-          </Text>
-        </ScrollView>
-      </SafeAreaView>
+          </ScrollView>
+        </SafeAreaView>
+      </ImageBackground>
     </LinearGradient>
   );
 };

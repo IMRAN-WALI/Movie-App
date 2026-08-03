@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  ImageBackground,
   Pressable,
   Text,
   TextInput,
@@ -70,94 +71,183 @@ const WatchPartyLobby = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1">
+    <SafeAreaView style={{ flex: 1 }}>
       <LinearGradient
         colors={["#181a3b", "#4f46e5", "#60a5fa"]}
-        className="flex-1 p-6"
+        start={{ x: 0.1, y: 0 }}
+        end={{ x: 0.9, y: 1 }}
+        style={{ flex: 1 }}
       >
-        {/* Back Button */}
-        <Pressable onPress={() => router.back()} className="mb-4">
-          <Ionicons name="arrow-back" size={24} color="white" />
-        </Pressable>
+        {/* WatchParty.png Background Image */}
+        <ImageBackground
+          source={require("../../assets/Images/WatchParty.png")}
+          style={{ flex: 1 }}
+          resizeMode="cover"
+          imageStyle={{ opacity: 0.4 }}
+        >
+          <View style={{ flex: 1, padding: 24 }}>
+            {/* Back Button */}
+            <Pressable
+              onPress={() => router.back()}
+              style={{ marginBottom: 16 }}
+            >
+              <Ionicons name="arrow-back" size={24} color="white" />
+            </Pressable>
 
-        {/* Movie Preview */}
-        {movieId && (
-          <View className="bg-white/10 rounded-2xl p-4 mb-6 flex-row">
-            <Image
-              source={{
-                uri:
-                  posterUrl ||
-                  "https://image.tmdb.org/t/p/w500/sfQtVlIHljToOwYjhe21KPGzZWK.jpg",
-              }}
-              className="w-20 h-28 rounded-lg"
-              resizeMode="cover"
-            />
-            <View className="flex-1 ml-4">
-              <Text className="text-white text-lg font-bold">
-                {movieTitle || "Movie"}
-              </Text>
-              <Text className="text-white/70 text-sm mt-1">
-                Host a watch party for this movie
-              </Text>
-              <View className="flex-row mt-2">
-                <View className="bg-green-500/20 px-3 py-1 rounded-full">
-                  <Text className="text-green-400 text-xs">🎬 Party Ready</Text>
+            {/* Movie Preview */}
+            {movieId && (
+              <View
+                style={{
+                  backgroundColor: "rgba(255,255,255,0.1)",
+                  borderRadius: 16,
+                  padding: 16,
+                  marginBottom: 24,
+                  flexDirection: "row",
+                }}
+              >
+                <Image
+                  source={{
+                    uri:
+                      posterUrl ||
+                      "https://image.tmdb.org/t/p/w500/sfQtVlIHljToOwYjhe21KPGzZWK.jpg",
+                  }}
+                  style={{ width: 80, height: 112, borderRadius: 8 }}
+                  resizeMode="cover"
+                />
+                <View style={{ flex: 1, marginLeft: 16 }}>
+                  <Text
+                    style={{ color: "white", fontSize: 18, fontWeight: "bold" }}
+                  >
+                    {movieTitle || "Movie"}
+                  </Text>
+                  <Text
+                    style={{
+                      color: "rgba(255,255,255,0.7)",
+                      fontSize: 13,
+                      marginTop: 4,
+                    }}
+                  >
+                    Host a watch party for this movie
+                  </Text>
+                  <View style={{ flexDirection: "row", marginTop: 8 }}>
+                    <View
+                      style={{
+                        backgroundColor: "rgba(34,197,94,0.2)",
+                        paddingHorizontal: 12,
+                        paddingVertical: 4,
+                        borderRadius: 999,
+                      }}
+                    >
+                      <Text style={{ color: "#4ade80", fontSize: 11 }}>
+                        🎬 Party Ready
+                      </Text>
+                    </View>
+                  </View>
                 </View>
               </View>
+            )}
+
+            <Text
+              style={{
+                color: "white",
+                fontSize: 32,
+                fontWeight: "bold",
+                marginBottom: 4,
+              }}
+            >
+              Watch Party
+            </Text>
+            <Text style={{ color: "rgba(255,255,255,0.7)", marginBottom: 24 }}>
+              Watch together, in sync, with voice and chat.
+            </Text>
+
+            {/* Host Button */}
+            <Pressable
+              onPress={handleCreate}
+              disabled={loading}
+              style={{
+                backgroundColor: "white",
+                borderRadius: 16,
+                paddingVertical: 16,
+                alignItems: "center",
+                marginBottom: 24,
+              }}
+            >
+              {loading ? (
+                <ActivityIndicator color="#4f46e5" />
+              ) : (
+                <Text
+                  style={{ color: "#4f46e5", fontWeight: "bold", fontSize: 18 }}
+                >
+                  🎥 Host a Party
+                </Text>
+              )}
+            </Pressable>
+
+            <Text
+              style={{
+                color: "rgba(255,255,255,0.5)",
+                textAlign: "center",
+                marginBottom: 16,
+              }}
+            >
+              — or join with a code —
+            </Text>
+
+            {/* Join Input */}
+            <TextInput
+              value={inviteCode}
+              onChangeText={(t) => setInviteCode(t.toUpperCase())}
+              placeholder="ABC123"
+              placeholderTextColor="rgba(255,255,255,0.4)"
+              autoCapitalize="characters"
+              maxLength={6}
+              style={{
+                backgroundColor: "rgba(255,255,255,0.1)",
+                borderRadius: 16,
+                paddingVertical: 16,
+                paddingHorizontal: 16,
+                color: "white",
+                textAlign: "center",
+                fontSize: 18,
+                letterSpacing: 2,
+                marginBottom: 16,
+              }}
+            />
+
+            {/* Join Button */}
+            <Pressable
+              onPress={handleJoin}
+              disabled={loading}
+              style={{
+                borderWidth: 1,
+                borderColor: "white",
+                borderRadius: 16,
+                paddingVertical: 16,
+                alignItems: "center",
+              }}
+            >
+              <Text
+                style={{ color: "white", fontWeight: "bold", fontSize: 18 }}
+              >
+                Join Party
+              </Text>
+            </Pressable>
+
+            {/* Quick Tips */}
+            <View style={{ marginTop: 32 }}>
+              <Text
+                style={{
+                  color: "rgba(255,255,255,0.4)",
+                  fontSize: 11,
+                  textAlign: "center",
+                }}
+              >
+                Tip: Share the invite code with friends to join your party
+              </Text>
             </View>
           </View>
-        )}
-
-        <Text className="text-white text-3xl font-bold mb-2">Watch Party</Text>
-        <Text className="text-white/70 mb-6">
-          Watch together, in sync, with voice and chat.
-        </Text>
-
-        {/* Host Button */}
-        <Pressable
-          onPress={handleCreate}
-          disabled={loading}
-          className="bg-white rounded-2xl py-4 items-center mb-6"
-        >
-          {loading ? (
-            <ActivityIndicator color="#4f46e5" />
-          ) : (
-            <Text className="text-indigo-700 font-bold text-lg">
-              🎥 Host a Party
-            </Text>
-          )}
-        </Pressable>
-
-        <Text className="text-white/50 text-center mb-4">
-          — or join with a code —
-        </Text>
-
-        {/* Join Input */}
-        <TextInput
-          value={inviteCode}
-          onChangeText={(t) => setInviteCode(t.toUpperCase())}
-          placeholder="ABC123"
-          placeholderTextColor="rgba(255,255,255,0.4)"
-          autoCapitalize="characters"
-          maxLength={6}
-          className="bg-white/10 rounded-2xl py-4 px-4 text-white text-center text-lg tracking-widest mb-4"
-        />
-
-        {/* Join Button */}
-        <Pressable
-          onPress={handleJoin}
-          disabled={loading}
-          className="border border-white rounded-2xl py-4 items-center"
-        >
-          <Text className="text-white font-bold text-lg">Join Party</Text>
-        </Pressable>
-
-        {/* Quick Tips */}
-        <View className="mt-8">
-          <Text className="text-white/40 text-xs text-center">
-            💡 Tip: Share the invite code with friends to join your party
-          </Text>
-        </View>
+        </ImageBackground>
       </LinearGradient>
     </SafeAreaView>
   );

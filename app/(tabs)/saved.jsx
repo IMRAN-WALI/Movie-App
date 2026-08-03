@@ -4,6 +4,7 @@ import {
   Text,
   FlatList,
   Image,
+  ImageBackground,
   Pressable,
   ActivityIndicator,
 } from "react-native";
@@ -56,118 +57,132 @@ const Saved = () => {
       end={{ x: 0.8, y: 1 }}
       style={{ flex: 1 }}
     >
-      <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
-        <View
-          style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: 8 }}
-        >
-          <Text style={{ color: "white", fontSize: 28, fontWeight: "800" }}>
-            {t("saved_title")}
-          </Text>
-          <Text style={{ color: "rgba(255,255,255,0.8)", marginTop: 4 }}>
-            {t("saved_subtitle")}
-          </Text>
-        </View>
-
-        {loading && (
+      {/* Saved.png Background Image */}
+      <ImageBackground
+        source={require("../../assets/Images/Saved.png")}
+        style={{ flex: 1 }}
+        resizeMode="cover"
+        imageStyle={{ opacity: 0.5 }}
+      >
+        <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
           <View
-            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+            style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: 8 }}
           >
-            <ActivityIndicator color="white" />
-          </View>
-        )}
-
-        {!loading && items.length === 0 && (
-          <View
-            style={{
-              flex: 1,
-              alignItems: "center",
-              justifyContent: "center",
-              paddingHorizontal: 40,
-            }}
-          >
-            <Ionicons
-              name="bookmark-outline"
-              size={48}
-              color="rgba(255,255,255,0.3)"
-            />
-            <Text
-              style={{
-                color: "rgba(255,255,255,0.6)",
-                marginTop: 12,
-                textAlign: "center",
-              }}
-            >
-              {t("saved_empty")}
+            <Text style={{ color: "white", fontSize: 28, fontWeight: "800" }}>
+              {t("saved_title")}
+            </Text>
+            <Text style={{ color: "rgba(255,255,255,0.8)", marginTop: 4 }}>
+              {t("saved_subtitle")}
             </Text>
           </View>
-        )}
 
-        <FlatList
-          data={items}
-          keyExtractor={(item) => item.movie_id}
-          contentContainerStyle={{ padding: 20, gap: 12 }}
-          renderItem={({ item }) => (
-            <Pressable
-              onPress={() => router.push(`/movies/${item.movie_id}`)}
+          {loading && (
+            <View
               style={{
-                flexDirection: "row",
-                backgroundColor: "rgba(255,255,255,0.08)",
-                borderRadius: 16,
-                overflow: "hidden",
+                flex: 1,
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              {item.movie?.poster_url ? (
-                <Image
-                  source={{ uri: item.movie.poster_url }}
-                  style={{ width: 72, height: 108 }}
-                />
-              ) : (
-                <View
-                  style={{
-                    width: 72,
-                    height: 108,
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Ionicons
-                    name="film-outline"
-                    size={24}
-                    color="rgba(255,255,255,0.4)"
-                  />
-                </View>
-              )}
-              <View style={{ flex: 1, padding: 12, justifyContent: "center" }}>
-                <Text
-                  style={{ color: "white", fontWeight: "700", fontSize: 15 }}
-                  numberOfLines={1}
-                >
-                  {item.movie?.title}
-                </Text>
-                <Text
-                  style={{
-                    color: "rgba(255,255,255,0.7)",
-                    fontSize: 12,
-                    marginTop: 4,
-                  }}
-                >
-                  {item.movie?.release_date
-                    ? new Date(item.movie.release_date).getFullYear()
-                    : ""}{" "}
-                  {item.movie?.genres?.[0] ? `· ${item.movie.genres[0]}` : ""}
-                </Text>
-              </View>
-              <Pressable
-                onPress={() => handleRemove(item.movie_id)}
-                hitSlop={10}
-                style={{ padding: 16, justifyContent: "center" }}
-              >
-                <Ionicons name="bookmark" size={22} color="#f43f5e" />
-              </Pressable>
-            </Pressable>
+              <ActivityIndicator color="white" />
+            </View>
           )}
-        />
-      </SafeAreaView>
+
+          {!loading && items.length === 0 && (
+            <View
+              style={{
+                flex: 1,
+                alignItems: "center",
+                justifyContent: "center",
+                paddingHorizontal: 40,
+              }}
+            >
+              <Ionicons
+                name="bookmark-outline"
+                size={48}
+                color="rgba(255,255,255,0.3)"
+              />
+              <Text
+                style={{
+                  color: "rgba(255,255,255,0.6)",
+                  marginTop: 12,
+                  textAlign: "center",
+                }}
+              >
+                {t("saved_empty")}
+              </Text>
+            </View>
+          )}
+
+          <FlatList
+            data={items}
+            keyExtractor={(item) => item.movie_id}
+            contentContainerStyle={{ padding: 20, gap: 12 }}
+            renderItem={({ item }) => (
+              <Pressable
+                onPress={() => router.push(`/movies/${item.movie_id}`)}
+                style={{
+                  flexDirection: "row",
+                  backgroundColor: "rgba(255,255,255,0.08)",
+                  borderRadius: 16,
+                  overflow: "hidden",
+                }}
+              >
+                {item.movie?.poster_url ? (
+                  <Image
+                    source={{ uri: item.movie.poster_url }}
+                    style={{ width: 72, height: 108 }}
+                  />
+                ) : (
+                  <View
+                    style={{
+                      width: 72,
+                      height: 108,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Ionicons
+                      name="film-outline"
+                      size={24}
+                      color="rgba(255,255,255,0.4)"
+                    />
+                  </View>
+                )}
+                <View
+                  style={{ flex: 1, padding: 12, justifyContent: "center" }}
+                >
+                  <Text
+                    style={{ color: "white", fontWeight: "700", fontSize: 15 }}
+                    numberOfLines={1}
+                  >
+                    {item.movie?.title}
+                  </Text>
+                  <Text
+                    style={{
+                      color: "rgba(255,255,255,0.7)",
+                      fontSize: 12,
+                      marginTop: 4,
+                    }}
+                  >
+                    {item.movie?.release_date
+                      ? new Date(item.movie.release_date).getFullYear()
+                      : ""}{" "}
+                    {item.movie?.genres?.[0] ? `· ${item.movie.genres[0]}` : ""}
+                  </Text>
+                </View>
+                <Pressable
+                  onPress={() => handleRemove(item.movie_id)}
+                  hitSlop={10}
+                  style={{ padding: 16, justifyContent: "center" }}
+                >
+                  <Ionicons name="bookmark" size={22} color="#f43f5e" />
+                </Pressable>
+              </Pressable>
+            )}
+          />
+        </SafeAreaView>
+      </ImageBackground>
     </LinearGradient>
   );
 };
