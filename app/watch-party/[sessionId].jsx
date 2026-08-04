@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  ImageBackground,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -197,299 +198,351 @@ const WatchPartyRoom = () => {
 
   if (loading) {
     return (
-      <SafeAreaView
-        style={{
-          flex: 1,
-          backgroundColor: "#0f172a",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
+      <ImageBackground
+        source={require("../../assets/Images/[SessionId].png")}
+        style={{ flex: 1 }}
+        resizeMode="cover"
+        blurRadius={12}
       >
-        <ActivityIndicator color="white" size="large" />
-        <Text style={{ color: "white", marginTop: 16 }}>Loading party...</Text>
-      </SafeAreaView>
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: "rgba(15,23,42,0.88)",
+          }}
+        >
+          <SafeAreaView
+            style={{
+              flex: 1,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <ActivityIndicator color="white" size="large" />
+            <Text style={{ color: "white", marginTop: 16 }}>
+              Loading party...
+            </Text>
+          </SafeAreaView>
+        </View>
+      </ImageBackground>
     );
   }
 
   if (!party) {
     return (
-      <SafeAreaView
-        style={{
-          flex: 1,
-          backgroundColor: "#0f172a",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
+      <ImageBackground
+        source={require("../../assets/Images/[SessionId].png")}
+        style={{ flex: 1 }}
+        resizeMode="cover"
+        blurRadius={12}
       >
-        <Text style={{ color: "white", fontSize: 18 }}>❌ Party not found</Text>
-        <Pressable onPress={() => router.back()} style={{ marginTop: 16 }}>
-          <Text style={{ color: "#60a5fa" }}>Go Back</Text>
-        </Pressable>
-      </SafeAreaView>
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: "rgba(15,23,42,0.88)",
+          }}
+        >
+          <SafeAreaView
+            style={{
+              flex: 1,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Text style={{ color: "white", fontSize: 18 }}>
+              ❌ Party not found
+            </Text>
+            <Pressable onPress={() => router.back()} style={{ marginTop: 16 }}>
+              <Text style={{ color: "#60a5fa" }}>Go Back</Text>
+            </Pressable>
+          </SafeAreaView>
+        </View>
+      </ImageBackground>
     );
   }
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <SafeAreaView style={{ flex: 1, backgroundColor: "#0f172a" }}>
-        <KeyboardAvoidingView
-          style={{ flex: 1 }}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
-        >
-          {/* Header */}
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: 16,
-              backgroundColor: "#0f172a",
-              borderBottomWidth: 1,
-              borderBottomColor: "#1e293b",
-            }}
-          >
-            <Pressable onPress={handleLeave}>
-              <Ionicons name="arrow-back" size={24} color="white" />
-            </Pressable>
-            <Pressable
-              onPress={copyInviteCode}
-              style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+    <ImageBackground
+      source={require("../../assets/Images/[SessionId].png")}
+      style={{ flex: 1 }}
+      resizeMode="cover"
+    >
+      <View style={{ flex: 1, backgroundColor: "rgba(15,23,42,0.5)" }}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <SafeAreaView style={{ flex: 1 }}>
+            <KeyboardAvoidingView
+              style={{ flex: 1 }}
+              behavior={Platform.OS === "ios" ? "padding" : "height"}
+              keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
             >
-              <Text
-                style={{
-                  color: "#60a5fa",
-                  fontWeight: "bold",
-                  fontSize: 16,
-                  letterSpacing: 2,
-                }}
-              >
-                {inviteCode}
-              </Text>
-              <Ionicons name="copy-outline" size={18} color="#60a5fa" />
-            </Pressable>
-            <Pressable onPress={handleShareInvite}>
-              <Ionicons name="share-outline" size={24} color="white" />
-            </Pressable>
-          </View>
-
-          {/* Movie Info */}
-          <View
-            style={{
-              padding: 14,
-              backgroundColor: "#1e293b",
-              marginHorizontal: 16,
-              marginVertical: 10,
-              borderRadius: 12,
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <View>
-              <Text
-                style={{ color: "white", fontSize: 16, fontWeight: "bold" }}
-              >
-                🎬 {movieTitle || `Movie #${party?.movie_id}`}
-              </Text>
+              {/* Header */}
               <View
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  marginTop: 2,
+                  justifyContent: "space-between",
+                  padding: 16,
+                  backgroundColor: "rgba(15,23,42,0.5)",
+                  borderBottomWidth: 1,
+                  borderBottomColor: "rgba(30,41,59,0.5)",
                 }}
               >
-                <Ionicons name="people" size={14} color="#94a3b8" />
-                <Text style={{ color: "#94a3b8", marginLeft: 4, fontSize: 13 }}>
-                  {participants?.length || 0} joined
-                </Text>
+                <Pressable onPress={handleLeave}>
+                  <Ionicons name="arrow-back" size={24} color="white" />
+                </Pressable>
+                <Pressable
+                  onPress={copyInviteCode}
+                  style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+                >
+                  <Text
+                    style={{
+                      color: "#60a5fa",
+                      fontWeight: "bold",
+                      fontSize: 16,
+                      letterSpacing: 2,
+                    }}
+                  >
+                    {inviteCode}
+                  </Text>
+                  <Ionicons name="copy-outline" size={18} color="#60a5fa" />
+                </Pressable>
+                <Pressable onPress={handleShareInvite}>
+                  <Ionicons name="share-outline" size={24} color="white" />
+                </Pressable>
               </View>
-            </View>
-            <View
-              style={{
-                backgroundColor: "#334155",
-                paddingHorizontal: 10,
-                paddingVertical: 4,
-                borderRadius: 12,
-              }}
-            >
-              <Text
+
+              {/* Movie Info */}
+              <View
                 style={{
-                  color: "#94a3b8",
-                  fontSize: 11,
-                  textTransform: "uppercase",
+                  padding: 14,
+                  backgroundColor: "rgba(30,41,59,0.75)",
+                  marginHorizontal: 16,
+                  marginVertical: 10,
+                  borderRadius: 12,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
                 }}
               >
-                {party.status}
-              </Text>
-            </View>
-          </View>
+                <View>
+                  <Text
+                    style={{ color: "white", fontSize: 16, fontWeight: "bold" }}
+                  >
+                    🎬 {movieTitle || `Movie #${party?.movie_id}`}
+                  </Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginTop: 2,
+                    }}
+                  >
+                    <Ionicons name="people" size={14} color="#94a3b8" />
+                    <Text
+                      style={{ color: "#94a3b8", marginLeft: 4, fontSize: 13 }}
+                    >
+                      {participants?.length || 0} joined
+                    </Text>
+                  </View>
+                </View>
+                <View
+                  style={{
+                    backgroundColor: "rgba(51,65,85,0.85)",
+                    paddingHorizontal: 10,
+                    paddingVertical: 4,
+                    borderRadius: 12,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "#94a3b8",
+                      fontSize: 11,
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    {party.status}
+                  </Text>
+                </View>
+              </View>
 
-          {/* Chat Messages */}
-          <View style={{ flex: 1, paddingHorizontal: 16 }}>
-            <ScrollView
-              ref={scrollViewRef}
-              style={{ flex: 1 }}
-              contentContainerStyle={{ flexGrow: 1, paddingBottom: 10 }}
-              showsVerticalScrollIndicator={false}
-            >
-              {messages?.length === 0 ? (
+              {/* Chat Messages */}
+              <View style={{ flex: 1, paddingHorizontal: 16 }}>
+                <ScrollView
+                  ref={scrollViewRef}
+                  style={{ flex: 1 }}
+                  contentContainerStyle={{ flexGrow: 1, paddingBottom: 10 }}
+                  showsVerticalScrollIndicator={false}
+                >
+                  {messages?.length === 0 ? (
+                    <View
+                      style={{
+                        flex: 1,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        paddingTop: 40,
+                      }}
+                    >
+                      <Ionicons
+                        name="chatbubbles-outline"
+                        size={50}
+                        color="#334155"
+                      />
+                      <Text
+                        style={{
+                          color: "#64748b",
+                          marginTop: 12,
+                          fontSize: 16,
+                        }}
+                      >
+                        No messages yet
+                      </Text>
+                      <Text
+                        style={{ color: "#475569", marginTop: 4, fontSize: 13 }}
+                      >
+                        Start the conversation! 💬
+                      </Text>
+                    </View>
+                  ) : (
+                    messages?.map((msg, index) => {
+                      const isOwn = msg.user_id === currentUserId;
+                      const time = msg.created_at
+                        ? new Date(msg.created_at).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
+                        : "";
+                      return (
+                        <View
+                          key={index}
+                          style={{
+                            backgroundColor: isOwn
+                              ? "#3b82f6"
+                              : "rgba(30,41,59,0.85)",
+                            paddingHorizontal: 12,
+                            paddingTop: 8,
+                            paddingBottom: 6,
+                            borderRadius: 12,
+                            marginBottom: 8,
+                            alignSelf: isOwn ? "flex-end" : "flex-start",
+                            maxWidth: "80%",
+                            borderBottomRightRadius: isOwn ? 4 : 12,
+                            borderBottomLeftRadius: isOwn ? 12 : 4,
+                          }}
+                        >
+                          <Text
+                            style={{
+                              color: "white",
+                              fontSize: 15,
+                              lineHeight: 21,
+                            }}
+                          >
+                            {msg.content}
+                          </Text>
+
+                          {/* Footer row: time + read ticks, WhatsApp style */}
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              alignItems: "center",
+                              justifyContent: "flex-end",
+                              marginTop: 2,
+                            }}
+                          >
+                            {!!time && (
+                              <Text
+                                style={{
+                                  fontSize: 11,
+                                  color: isOwn
+                                    ? "rgba(255,255,255,0.65)"
+                                    : "#64748b",
+                                }}
+                              >
+                                {time}
+                              </Text>
+                            )}
+                            {isOwn && (
+                              <MessageTicks
+                                message={msg}
+                                participants={participants}
+                                currentUserId={currentUserId}
+                              />
+                            )}
+                          </View>
+                        </View>
+                      );
+                    })
+                  )}
+                </ScrollView>
+              </View>
+
+              {/* ✅ Message Input - PERFECT CENTER ALIGNMENT */}
+              <View
+                style={{
+                  flexDirection: "row",
+                  paddingHorizontal: 12,
+                  paddingVertical: 10,
+                  gap: 8,
+                  backgroundColor: "rgba(15,23,42,0.6)",
+                  borderTopWidth: 1,
+                  borderTopColor: "rgba(30,41,59,0.8)",
+                  alignItems: "center",
+                }}
+              >
                 <View
                   style={{
                     flex: 1,
+                    backgroundColor: "rgba(30,41,59,0.85)",
+                    borderRadius: 20,
+                    paddingHorizontal: 16,
                     justifyContent: "center",
-                    alignItems: "center",
-                    paddingTop: 40,
                   }}
                 >
-                  <Ionicons
-                    name="chatbubbles-outline"
-                    size={50}
-                    color="#334155"
+                  <TextInput
+                    ref={inputRef}
+                    style={{
+                      color: "#FFFFFF",
+                      fontSize: 16,
+                      paddingVertical: 10,
+                      paddingHorizontal: 0,
+                      minHeight: 44,
+                    }}
+                    placeholder="Type a message..."
+                    placeholderTextColor="#94a3b8"
+                    value={messageInput}
+                    onChangeText={setMessageInput}
+                    multiline={false}
+                    returnKeyType="send"
+                    onSubmitEditing={handleSendMessage}
+                    selectionColor="#3b82f6"
+                    cursorColor="#3b82f6"
                   />
-                  <Text
-                    style={{ color: "#64748b", marginTop: 12, fontSize: 16 }}
-                  >
-                    No messages yet
-                  </Text>
-                  <Text
-                    style={{ color: "#475569", marginTop: 4, fontSize: 13 }}
-                  >
-                    Start the conversation! 💬
-                  </Text>
                 </View>
-              ) : (
-                messages?.map((msg, index) => {
-                  const isOwn = msg.user_id === currentUserId;
-                  const time = msg.created_at
-                    ? new Date(msg.created_at).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })
-                    : "";
-                  return (
-                    <View
-                      key={index}
-                      style={{
-                        backgroundColor: isOwn ? "#3b82f6" : "#1e293b",
-                        paddingHorizontal: 12,
-                        paddingTop: 8,
-                        paddingBottom: 6,
-                        borderRadius: 12,
-                        marginBottom: 8,
-                        alignSelf: isOwn ? "flex-end" : "flex-start",
-                        maxWidth: "80%",
-                        borderBottomRightRadius: isOwn ? 4 : 12,
-                        borderBottomLeftRadius: isOwn ? 12 : 4,
-                      }}
-                    >
-                      <Text
-                        style={{ color: "white", fontSize: 15, lineHeight: 21 }}
-                      >
-                        {msg.content}
-                      </Text>
-
-                      {/* Footer row: time + read ticks, WhatsApp style */}
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          alignItems: "center",
-                          justifyContent: "flex-end",
-                          marginTop: 2,
-                        }}
-                      >
-                        {!!time && (
-                          <Text
-                            style={{
-                              fontSize: 11,
-                              color: isOwn
-                                ? "rgba(255,255,255,0.65)"
-                                : "#64748b",
-                            }}
-                          >
-                            {time}
-                          </Text>
-                        )}
-                        {isOwn && (
-                          <MessageTicks
-                            message={msg}
-                            participants={participants}
-                            currentUserId={currentUserId}
-                          />
-                        )}
-                      </View>
-                    </View>
-                  );
-                })
-              )}
-            </ScrollView>
-          </View>
-
-          {/* ✅ Message Input - PERFECT CENTER ALIGNMENT */}
-          <View
-            style={{
-              flexDirection: "row",
-              paddingHorizontal: 12,
-              paddingVertical: 10,
-              gap: 8,
-              backgroundColor: "#0f172a",
-              borderTopWidth: 1,
-              borderTopColor: "#1e293b",
-              alignItems: "center",
-            }}
-          >
-            <View
-              style={{
-                flex: 1,
-                backgroundColor: "#1e293b",
-                borderRadius: 20,
-                paddingHorizontal: 16,
-                justifyContent: "center",
-              }}
-            >
-              <TextInput
-                ref={inputRef}
-                style={{
-                  color: "#FFFFFF",
-                  fontSize: 16,
-                  paddingVertical: 10,
-                  paddingHorizontal: 0,
-                  minHeight: 44,
-                }}
-                placeholder="Type a message..."
-                placeholderTextColor="#94a3b8"
-                value={messageInput}
-                onChangeText={setMessageInput}
-                multiline={false}
-                returnKeyType="send"
-                onSubmitEditing={handleSendMessage}
-                selectionColor="#3b82f6"
-                cursorColor="#3b82f6"
-              />
-            </View>
-            <Pressable
-              onPress={handleSendMessage}
-              style={({ pressed }) => ({
-                backgroundColor: messageInput.trim() ? "#3b82f6" : "#334155",
-                width: 55,
-                height: 55,
-                borderRadius: 25,
-                justifyContent: "center",
-                alignItems: "center",
-                opacity: pressed ? 0.8 : 1,
-              })}
-              disabled={!messageInput.trim()}
-            >
-              <Ionicons
-                name="send"
-                size={30}
-                color={messageInput.trim() ? "white" : "#64748b"}
-              />
-            </Pressable>
-          </View>
-        </KeyboardAvoidingView>
-      </SafeAreaView>
-    </TouchableWithoutFeedback>
+                <Pressable
+                  onPress={handleSendMessage}
+                  style={({ pressed }) => ({
+                    backgroundColor: messageInput.trim()
+                      ? "#3b82f6"
+                      : "#334155",
+                    width: 55,
+                    height: 55,
+                    borderRadius: 25,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    opacity: pressed ? 0.8 : 1,
+                  })}
+                  disabled={!messageInput.trim()}
+                >
+                  <Ionicons
+                    name="send"
+                    size={30}
+                    color={messageInput.trim() ? "white" : "#64748b"}
+                  />
+                </Pressable>
+              </View>
+            </KeyboardAvoidingView>
+          </SafeAreaView>
+        </TouchableWithoutFeedback>
+      </View>
+    </ImageBackground>
   );
 };
 

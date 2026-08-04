@@ -8,6 +8,7 @@ import {
   Alert,
   FlatList,
   Image,
+  ImageBackground,
   Pressable,
   RefreshControl,
   Text,
@@ -340,132 +341,146 @@ const HistoryScreen = () => {
   };
 
   return (
-    <LinearGradient
-      colors={["#3730a3", "#312e81"]}
-      start={{ x: 0.1, y: 0 }}
-      end={{ x: 0.9, y: 1 }}
+    <ImageBackground
+      source={require("../../assets/Images/WatchHistory.png")}
       style={{ flex: 1 }}
+      resizeMode="cover"
     >
-      <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
-        {/* Header */}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            paddingHorizontal: 16,
-            paddingVertical: 14,
-          }}
-        >
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
-            <Pressable onPress={() => router.back()}>
-              <Ionicons name="arrow-back" size={24} color="white" />
-            </Pressable>
-            <View>
-              <Text style={{ color: "white", fontSize: 18, fontWeight: "700" }}>
-                {t("history_title")}
-              </Text>
-              <Text style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>
-                {t("history_subtitle")}
-              </Text>
-            </View>
-          </View>
-
-          {history.length > 0 && (
-            <Pressable
-              onPress={handleClearAll}
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 4,
-                paddingHorizontal: 10,
-                paddingVertical: 6,
-                borderRadius: 999,
-                backgroundColor: "rgba(248,113,113,0.15)",
-              }}
-            >
-              <Ionicons name="trash-outline" size={14} color="#f87171" />
-              <Text
-                style={{ color: "#f87171", fontSize: 12, fontWeight: "700" }}
-              >
-                {t("history_clear_all")}
-              </Text>
-            </Pressable>
-          )}
-        </View>
-
-        {loading ? (
+      <LinearGradient
+        colors={["rgba(55,48,163,0.85)", "rgba(49,46,129,0.9)"]}
+        start={{ x: 0.1, y: 0 }}
+        end={{ x: 0.9, y: 1 }}
+        style={{ flex: 1 }}
+      >
+        <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
+          {/* Header */}
           <View
-            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-          >
-            <ActivityIndicator color="white" size="large" />
-          </View>
-        ) : (
-          <FlatList
-            data={history}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <HistoryCard
-                item={item}
-                t={t}
-                locale={language}
-                onDelete={handleDeleteItem}
-              />
-            )}
-            contentContainerStyle={{
-              padding: 16,
-              paddingBottom: 40,
-              flexGrow: 1,
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              paddingHorizontal: 16,
+              paddingVertical: 14,
             }}
-            showsVerticalScrollIndicator={false}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-                tintColor="white"
-              />
-            }
-            ListEmptyComponent={
-              <View
-                style={{
-                  flex: 1,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  paddingTop: 60,
-                }}
-              >
-                <Ionicons
-                  name="time-outline"
-                  size={54}
-                  color="rgba(255,255,255,0.25)"
-                />
+          >
+            <View
+              style={{ flexDirection: "row", alignItems: "center", gap: 12 }}
+            >
+              <Pressable onPress={() => router.back()}>
+                <Ionicons name="arrow-back" size={24} color="white" />
+              </Pressable>
+              <View>
                 <Text
-                  style={{
-                    color: "rgba(255,255,255,0.6)",
-                    fontSize: 15,
-                    fontWeight: "600",
-                    marginTop: 14,
-                  }}
+                  style={{ color: "white", fontSize: 18, fontWeight: "700" }}
                 >
-                  {t("history_empty_title")}
+                  {t("history_title")}
                 </Text>
-                <Text
-                  style={{
-                    color: "rgba(255,255,255,0.35)",
-                    fontSize: 12,
-                    marginTop: 4,
-                    textAlign: "center",
-                    paddingHorizontal: 30,
-                  }}
-                >
-                  {t("history_empty_subtitle")}
+                <Text style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>
+                  {t("history_subtitle")}
                 </Text>
               </View>
-            }
-          />
-        )}
-      </SafeAreaView>
-    </LinearGradient>
+            </View>
+
+            {history.length > 0 && (
+              <Pressable
+                onPress={handleClearAll}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 4,
+                  paddingHorizontal: 10,
+                  paddingVertical: 6,
+                  borderRadius: 999,
+                  backgroundColor: "rgba(248,113,113,0.15)",
+                }}
+              >
+                <Ionicons name="trash-outline" size={14} color="#f87171" />
+                <Text
+                  style={{ color: "#f87171", fontSize: 12, fontWeight: "700" }}
+                >
+                  {t("history_clear_all")}
+                </Text>
+              </Pressable>
+            )}
+          </View>
+
+          {loading ? (
+            <View
+              style={{
+                flex: 1,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <ActivityIndicator color="white" size="large" />
+            </View>
+          ) : (
+            <FlatList
+              data={history}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <HistoryCard
+                  item={item}
+                  t={t}
+                  locale={language}
+                  onDelete={handleDeleteItem}
+                />
+              )}
+              contentContainerStyle={{
+                padding: 16,
+                paddingBottom: 40,
+                flexGrow: 1,
+              }}
+              showsVerticalScrollIndicator={false}
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
+                  tintColor="white"
+                />
+              }
+              ListEmptyComponent={
+                <View
+                  style={{
+                    flex: 1,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    paddingTop: 60,
+                  }}
+                >
+                  <Ionicons
+                    name="time-outline"
+                    size={54}
+                    color="rgba(255,255,255,0.25)"
+                  />
+                  <Text
+                    style={{
+                      color: "rgba(255,255,255,0.6)",
+                      fontSize: 15,
+                      fontWeight: "600",
+                      marginTop: 14,
+                    }}
+                  >
+                    {t("history_empty_title")}
+                  </Text>
+                  <Text
+                    style={{
+                      color: "rgba(255,255,255,0.35)",
+                      fontSize: 12,
+                      marginTop: 4,
+                      textAlign: "center",
+                      paddingHorizontal: 30,
+                    }}
+                  >
+                    {t("history_empty_subtitle")}
+                  </Text>
+                </View>
+              }
+            />
+          )}
+        </SafeAreaView>
+      </LinearGradient>
+    </ImageBackground>
   );
 };
 

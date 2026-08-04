@@ -5,6 +5,8 @@ import React, { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  Image,
+  ImageBackground,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -71,150 +73,180 @@ const VerifyCode = () => {
   };
 
   return (
-    <LinearGradient
-      colors={["#1e1b4b", "#4338ca", "#312e81"]}
+    <ImageBackground
+      source={require("../../assets/Images/Forget-Change.png")}
       style={{ flex: 1 }}
+      resizeMode="cover"
     >
-      <SafeAreaView style={{ flex: 1 }}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
-          style={{ flex: 1 }}
-        >
-          <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-            <View style={{ padding: 24, paddingTop: 8 }}>
-              <Pressable
-                onPress={() => safeBack("/auth/forgot-password")}
-                hitSlop={12}
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 20,
-                  backgroundColor: "rgba(255,255,255,0.1)",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Ionicons name="chevron-back" size={22} color="white" />
-              </Pressable>
-            </View>
-
-            <View
-              style={{
-                flex: 1,
-                paddingHorizontal: 24,
-                justifyContent: "center",
-              }}
-            >
-              <View
-                style={{
-                  backgroundColor: "rgba(255,255,255,0.06)",
-                  borderRadius: 28,
-                  padding: 24,
-                  borderWidth: 1,
-                  borderColor: "rgba(255,255,255,0.1)",
-                }}
-              >
-                <Ionicons
-                  name="mail-open-outline"
-                  size={40}
-                  color="#818cf8"
-                  style={{ marginBottom: 16 }}
-                />
-                <Text
+      <LinearGradient
+        colors={[
+          "rgba(30,27,75,0.85)",
+          "rgba(67,56,202,0.8)",
+          "rgba(49,46,129,0.88)",
+        ]}
+        style={{ flex: 1 }}
+      >
+        <SafeAreaView style={{ flex: 1 }}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
+            style={{ flex: 1 }}
+          >
+            <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+              <View style={{ padding: 24, paddingTop: 8 }}>
+                <Pressable
+                  onPress={() => safeBack("/auth/forgot-password")}
+                  hitSlop={12}
                   style={{
-                    color: "white",
-                    fontSize: 24,
-                    fontWeight: "800",
-                    marginBottom: 6,
+                    width: 40,
+                    height: 40,
+                    borderRadius: 20,
+                    backgroundColor: "rgba(255,255,255,0.1)",
+                    alignItems: "center",
+                    justifyContent: "center",
                   }}
                 >
-                  Enter the code
-                </Text>
-                <Text
-                  style={{
-                    color: "rgba(255,255,255,0.65)",
-                    marginBottom: 24,
-                    fontSize: 14,
-                  }}
-                >
-                  We sent a 6-digit code to {email}. Enter it below.
-                </Text>
+                  <Ionicons name="chevron-back" size={22} color="white" />
+                </Pressable>
+              </View>
 
+              <View style={{ alignItems: "center" }}>
                 <View
                   style={{
-                    flexDirection: "row",
+                    width: 100,
+                    height: 100,
                     alignItems: "center",
-                    backgroundColor: "rgba(255,255,255,0.08)",
-                    borderRadius: 16,
-                    paddingHorizontal: 16,
-                    marginBottom: 20,
-                    height: 54,
+                    justifyContent: "center",
                   }}
                 >
-                  <Ionicons
-                    name="key-outline"
-                    size={19}
-                    color="rgba(255,255,255,0.6)"
-                  />
-                  <TextInput
-                    value={code}
-                    onChangeText={setCode}
-                    placeholder="Enter code"
-                    placeholderTextColor="rgba(255,255,255,0.4)"
-                    keyboardType="number-pad"
-                    maxLength={10}
+                  <Image
+                    source={require("../../assets/Images/MainLogo.png")}
                     style={{
-                      flex: 1,
-                      color: "white",
-                      marginLeft: 12,
-                      fontSize: 18,
-                      letterSpacing: 4,
+                      width: "100%",
+                      height: "100%",
+                      resizeMode: "contain",
                     }}
                   />
                 </View>
+              </View>
 
-                <Pressable onPress={handleVerify} disabled={loading}>
-                  <LinearGradient
-                    colors={["#6366f1", "#4338ca"]}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
+              <View
+                style={{
+                  flex: 1,
+                  paddingHorizontal: 24,
+                  justifyContent: "center",
+                }}
+              >
+                <View
+                  style={{
+                    backgroundColor: "rgba(255,255,255,0.06)",
+                    borderRadius: 28,
+                    padding: 24,
+                    borderWidth: 1,
+                    borderColor: "rgba(255,255,255,0.1)",
+                  }}
+                >
+                  <Ionicons
+                    name="mail-open-outline"
+                    size={40}
+                    color="#818cf8"
+                    style={{ marginBottom: 16 }}
+                  />
+                  <Text
                     style={{
-                      borderRadius: 16,
-                      paddingVertical: 17,
-                      alignItems: "center",
+                      color: "white",
+                      fontSize: 24,
+                      fontWeight: "800",
+                      marginBottom: 6,
                     }}
                   >
-                    {loading ? (
-                      <ActivityIndicator color="white" />
-                    ) : (
-                      <Text
-                        style={{
-                          color: "white",
-                          fontWeight: "700",
-                          fontSize: 16,
-                        }}
-                      >
-                        Verify Code
-                      </Text>
-                    )}
-                  </LinearGradient>
-                </Pressable>
-
-                <Pressable
-                  onPress={handleResend}
-                  disabled={resending}
-                  style={{ marginTop: 20, alignItems: "center" }}
-                >
-                  <Text style={{ color: "#a5b4fc", fontWeight: "600" }}>
-                    {resending ? "Resending..." : "Didn't get a code? Resend"}
+                    Enter the code
                   </Text>
-                </Pressable>
+                  <Text
+                    style={{
+                      color: "rgba(255,255,255,0.65)",
+                      marginBottom: 24,
+                      fontSize: 14,
+                    }}
+                  >
+                    We sent a 6-digit code to {email}. Enter it below.
+                  </Text>
+
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      backgroundColor: "rgba(255,255,255,0.08)",
+                      borderRadius: 16,
+                      paddingHorizontal: 16,
+                      marginBottom: 20,
+                      height: 54,
+                    }}
+                  >
+                    <Ionicons
+                      name="key-outline"
+                      size={19}
+                      color="rgba(255,255,255,0.6)"
+                    />
+                    <TextInput
+                      value={code}
+                      onChangeText={setCode}
+                      placeholder="Enter code"
+                      placeholderTextColor="rgba(255,255,255,0.4)"
+                      keyboardType="number-pad"
+                      maxLength={10}
+                      style={{
+                        flex: 1,
+                        color: "white",
+                        marginLeft: 12,
+                        fontSize: 18,
+                        letterSpacing: 4,
+                      }}
+                    />
+                  </View>
+
+                  <Pressable onPress={handleVerify} disabled={loading}>
+                    <LinearGradient
+                      colors={["#6366f1", "#4338ca"]}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
+                      style={{
+                        borderRadius: 16,
+                        paddingVertical: 17,
+                        alignItems: "center",
+                      }}
+                    >
+                      {loading ? (
+                        <ActivityIndicator color="white" />
+                      ) : (
+                        <Text
+                          style={{
+                            color: "white",
+                            fontWeight: "700",
+                            fontSize: 16,
+                          }}
+                        >
+                          Verify Code
+                        </Text>
+                      )}
+                    </LinearGradient>
+                  </Pressable>
+
+                  <Pressable
+                    onPress={handleResend}
+                    disabled={resending}
+                    style={{ marginTop: 20, alignItems: "center" }}
+                  >
+                    <Text style={{ color: "#a5b4fc", fontWeight: "600" }}>
+                      {resending ? "Resending..." : "Didn't get a code? Resend"}
+                    </Text>
+                  </Pressable>
+                </View>
               </View>
-            </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </SafeAreaView>
-    </LinearGradient>
+            </ScrollView>
+          </KeyboardAvoidingView>
+        </SafeAreaView>
+      </LinearGradient>
+    </ImageBackground>
   );
 };
 

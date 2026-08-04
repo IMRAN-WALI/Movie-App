@@ -1,8 +1,48 @@
+import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useRef } from "react";
 import { Animated, Text, View } from "react-native";
 import DirectorAffinity from "../../components/taste-dna/DirectorAffinity";
-import GenreBar from "../../components/taste-dna/GenreBar";
+import GenreProgressRing from "../../components/taste-dna/GenreProgressRing";
+
+const RING_COLORS = [
+  ["#38bdf8", "#6366f1"],
+  ["#a78bfa", "#38bdf8"],
+  ["#f472b6", "#818cf8"],
+  ["#34d399", "#38bdf8"],
+  ["#facc15", "#f472b6"],
+  ["#818cf8", "#4f46e5"],
+];
+
+const SectionHeading = ({ icon, title }) => (
+  <View
+    style={{
+      flexDirection: "row",
+      alignItems: "center",
+      alignSelf: "flex-start",
+      gap: 7,
+      backgroundColor: "rgba(255,255,255,0.1)",
+      borderWidth: 1,
+      borderColor: "rgba(255,255,255,0.16)",
+      borderRadius: 999,
+      paddingVertical: 7,
+      paddingHorizontal: 14,
+      marginBottom: 14,
+    }}
+  >
+    <Ionicons name={icon} size={13} color="#e0e7ff" />
+    <Text
+      style={{
+        color: "white",
+        fontWeight: "700",
+        fontSize: 12.5,
+        letterSpacing: 0.3,
+      }}
+    >
+      {title}
+    </Text>
+  </View>
+);
 
 const TasteCard = ({ profile }) => {
   const fade = useRef(new Animated.Value(0)).current;
@@ -23,7 +63,6 @@ const TasteCard = ({ profile }) => {
     ]).start();
   }, [fade, translateY]);
 
-  // ✅ Log profile data to debug
   console.log("🎨 TasteCard rendering with profile:", profile?.genre_breakdown);
 
   const genreEntries = Object.entries(profile?.genre_breakdown || {}).sort(
@@ -39,77 +78,101 @@ const TasteCard = ({ profile }) => {
         colors={["#7c3aed", "#4f46e5", "#0ea5e9"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={{ borderRadius: 24, padding: 24 }}
+        style={{ borderRadius: 28, padding: 24 }}
       >
-        <Text
+        {/* Header */}
+        <View
           style={{
-            color: "rgba(255,255,255,0.7)",
-            fontSize: 13,
-            letterSpacing: 1,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 10,
+            marginBottom: 24,
           }}
         >
-          YOUR TASTE DNA
-        </Text>
-        <Text
-          style={{
-            color: "white",
-            fontSize: 26,
-            fontWeight: "800",
-            marginTop: 4,
-            marginBottom: 20,
-          }}
-        >
-          {profile?.top_summary || "Building your profile…"}
-        </Text>
+          <View
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: 12,
+              backgroundColor: "rgba(255,255,255,0.15)",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Ionicons name="sparkles" size={18} color="white" />
+          </View>
+          <Text
+            style={{
+              color: "rgba(255,255,255,0.75)",
+              fontSize: 12,
+              fontWeight: "700",
+              letterSpacing: 1.2,
+            }}
+          >
+            YOUR TASTE DNA
+          </Text>
+        </View>
 
-        <Text style={{ color: "white", fontWeight: "700", marginBottom: 10 }}>
-          Genres
-        </Text>
-        {genreEntries.map(([genre, pct], i) => (
-          <GenreBar
-            key={genre}
-            label={genre}
-            percentage={pct / 100}
-            index={i}
-          />
-        ))}
-
-        <Text
+        {/* Genres — circular progress rings */}
+        <View
           style={{
-            color: "white",
-            fontWeight: "700",
-            marginTop: 8,
-            marginBottom: 10,
+            backgroundColor: "rgba(255,255,255,0.08)",
+            borderRadius: 20,
+            padding: 16,
+            marginBottom: 24,
           }}
         >
-          Directors you gravitate toward
-        </Text>
+          <SectionHeading icon="pie-chart" title="GENRES" />
+          <View
+            style={{
+              flexDirection: "row",
+              flexWrap: "wrap",
+              justifyContent: "center",
+              rowGap: 20,
+            }}
+          >
+            {genreEntries.map(([genre, pct], i) => (
+              <GenreProgressRing
+                key={genre}
+                label={genre}
+                percentage={pct / 100}
+                gradientId={`genre-gradient-${i}`}
+                colors={RING_COLORS[i % RING_COLORS.length]}
+              />
+            ))}
+          </View>
+        </View>
+
+        {/* Directors */}
+        <SectionHeading icon="film" title="DIRECTORS YOU GRAVITATE TOWARD" />
         <DirectorAffinity directors={profile?.director_affinity || {}} />
 
+        {/* Eras */}
         {eraEntries.length > 0 && (
           <>
-            <Text
-              style={{
-                color: "white",
-                fontWeight: "700",
-                marginTop: 20,
-                marginBottom: 10,
-              }}
-            >
-              Favorite eras
-            </Text>
+            <View style={{ marginTop: 20 }}>
+              <SectionHeading icon="time" title="FAVORITE ERAS" />
+            </View>
             <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
               {eraEntries.map(([era, pct]) => (
                 <View
                   key={era}
                   style={{
-                    backgroundColor: "rgba(0,0,0,0.2)",
-                    borderRadius: 16,
-                    paddingVertical: 6,
-                    paddingHorizontal: 12,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 6,
+                    backgroundColor: "rgba(255,255,255,0.1)",
+                    borderRadius: 999,
+                    paddingVertical: 7,
+                    paddingHorizontal: 14,
+                    borderWidth: 1,
+                    borderColor: "rgba(255,255,255,0.15)",
                   }}
                 >
-                  <Text style={{ color: "white" }}>
+                  <Ionicons name="time-outline" size={13} color="white" />
+                  <Text
+                    style={{ color: "white", fontSize: 13, fontWeight: "600" }}
+                  >
                     {era} · {Math.round(pct)}%
                   </Text>
                 </View>
@@ -120,9 +183,9 @@ const TasteCard = ({ profile }) => {
 
         <Text
           style={{
-            color: "rgba(255,255,255,0.6)",
+            color: "rgba(255,255,255,0.55)",
             fontSize: 12,
-            marginTop: 20,
+            marginTop: 24,
           }}
         >
           Based on {profile?.sample_size || 0} rated or completed movies
