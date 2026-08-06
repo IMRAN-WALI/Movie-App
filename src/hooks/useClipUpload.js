@@ -5,20 +5,42 @@ import { createClip, uploadSourceVideo } from "../services/clipService";
 export function useClipUpload() {
   const [uploading, setUploading] = useState(false);
   const [progressLabel, setProgressLabel] = useState(null);
-  const [error, setError] = useState(null);
 
   const submitClip = useCallback(
-    async ({ localVideoUri, movieId, startSeconds, endSeconds, caption }) => {
+    async ({
+      localVideoUri,
+      remoteVideoUrl,
+      movieId,
+      startSeconds,
+      endSeconds,
+      caption,
+    }) => {
       setUploading(true);
-      setError(null);
       try {
+        console.log("🔄 submitClip start", {
+          hasLocalVideo: !!localVideoUri,
+          hasRemoteVideo: !!remoteVideoUrl,
+          movieId,
+          startSeconds,
+          endSeconds,
+        });
+
         const {
           data: { user },
         } = await supabase.auth.getUser();
-        if (!user) throw new Error("Not authenticated");
+        if (!user) throw new Error("You must be logged in to post a clip.");
 
-        setProgressLabel("Uploading source video…");
-        const sourceUrl = await uploadSourceVideo(localVideoUri, user.id);
+        let sourceUrl = remoteVideoUrl;
+
+        if (!sourceUrl) {
+          if (!localVideoUri) throw new Error("No video selected.");
+          setProgressLabel("Uploading video…");
+          console.log("🔄 Uploading local video:", localVideoUri);
+          sourceUrl = await uploadSourceVideo(localVideoUri, user.id);
+          console.log("✅ Uploaded, public URL:", sourceUrl);
+        } else {
+          setProgressLabel("Using movie stream…");
+        }
 
         setProgressLabel("Creating clip…");
         const clip = await createClip({
@@ -29,11 +51,13 @@ export function useClipUpload() {
           caption,
         });
 
-        setProgressLabel("Processing (this happens in the background)…");
+        console.log("✅ Clip created:", clip?.id);
         return clip;
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Failed to create clip");
-        return null;
+        console.log("❌ submitClip failed:", e);
+        // Re-throw so the screen can show the exact message to the user
+        // instead of failing silently.
+        throw e;
       } finally {
         setUploading(false);
         setProgressLabel(null);
@@ -42,5 +66,5 @@ export function useClipUpload() {
     [],
   );
 
-  return { uploading, progressLabel, error, submitClip };
+  return { uploading, progressLabel, submitClip };
 }

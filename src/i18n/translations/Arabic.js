@@ -162,7 +162,7 @@ export default {
   trending_try_again: "حاول مرة أخرى",
   trending_empty: "لا توجد أفلام رائجة بالقرب",
   trending_refresh: "تحديث",
-  trending_badge: "🔥 رائج",
+  trending_badge: " رائج",
   trending_views: "مشاهدات",
 
   tab_home: "الرئيسية",

@@ -89,6 +89,24 @@ const MovieDetails = () => {
     }
   };
 
+  const handleMakeClip = () => {
+    if (movie?.video_url) {
+      // Movie has its own stream — clip directly from it, no gallery needed.
+      router.push({
+        pathname: "/clips/create",
+        params: {
+          movieId: id,
+          movieTitle: movie.title,
+          videoUrl: movie.video_url,
+          startSeconds: "0",
+        },
+      });
+    } else {
+      // No stream available yet — fall back to picking from gallery.
+      router.push(`/clips/create?movieId=${id}`);
+    }
+  };
+
   if (loading) {
     return (
       <SafeAreaView
@@ -209,12 +227,42 @@ const MovieDetails = () => {
             </Text>
           )}
 
-          <View style={{ flexDirection: "row", gap: 10, marginTop: 24 }}>
+          {/* Watch Movie — only shows up if this movie has a playable video_url */}
+          {movie.video_url && (
+            <Pressable
+              onPress={() => router.push(`/movies/player/${id}`)}
+              style={{
+                backgroundColor: "#4f46e5",
+                borderRadius: 14,
+                paddingVertical: 15,
+                alignItems: "center",
+                flexDirection: "row",
+                justifyContent: "center",
+                gap: 8,
+                marginTop: 24,
+              }}
+            >
+              <Ionicons name="play-circle" size={20} color="white" />
+              <Text style={{ color: "white", fontWeight: "700", fontSize: 15 }}>
+                Watch Movie
+              </Text>
+            </Pressable>
+          )}
+
+          <View
+            style={{
+              flexDirection: "row",
+              gap: 10,
+              marginTop: movie.video_url ? 12 : 24,
+            }}
+          >
             <Pressable
               onPress={() => router.push(`/watch-party?movieId=${id}`)}
               style={{
                 flex: 1,
-                backgroundColor: "#4f46e5",
+                backgroundColor: movie.video_url
+                  ? "rgba(255,255,255,0.08)"
+                  : "#4f46e5",
                 borderRadius: 14,
                 paddingVertical: 14,
                 alignItems: "center",
@@ -230,10 +278,12 @@ const MovieDetails = () => {
             </Pressable>
 
             <Pressable
-              onPress={() => router.push(`/clips/create?movieId=${id}`)}
+              onPress={handleMakeClip}
               style={{
                 flex: 1,
-                backgroundColor: "#0ea5e9",
+                backgroundColor: movie.video_url
+                  ? "rgba(255,255,255,0.08)"
+                  : "#0ea5e9",
                 borderRadius: 14,
                 paddingVertical: 14,
                 alignItems: "center",
@@ -261,7 +311,7 @@ const MovieDetails = () => {
           </Text>
           <View style={{ flexDirection: "row", gap: 10, alignItems: "center" }}>
             {[1, 2, 3, 4, 5].map((starIndex) => {
-              const starValue = starIndex * 2; 
+              const starValue = starIndex * 2;
               const filled = myRating >= starValue;
               return (
                 <Pressable

@@ -163,7 +163,7 @@ export default {
   trending_try_again: "फिर कोशिश करें",
   trending_empty: "पास कोई ट्रेंडिंग फ़िल्म नहीं मिली",
   trending_refresh: "रिफ़्रेश",
-  trending_badge: "🔥 ट्रेंडिंग",
+  trending_badge: " ट्रेंडिंग",
   trending_views: "व्यूज़",
 
   tab_home: "होम",

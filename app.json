@@ -8,17 +8,17 @@
     "scheme": "movieapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "ios": { "supportsTablet": true },
+    "ios": {
+      "supportsTablet": true
+    },
     "android": {
+      "package": "com.imranwali.movieapp",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/Images/MainLogo.png",
-        "backgroundImage": "./assets/Images/MainLogo.png",
-        "monochromeImage": "./assets/Images/MainLogo.png"
+        "backgroundColor": "#E6F4FE"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.imranwali.movieapp",
       "softwareKeyboardLayoutMode": "resize"
     },
     "web": {
@@ -35,13 +35,20 @@
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
-          "dark": { "backgroundColor": "#000000" }
+          "dark": {
+            "backgroundColor": "#000000"
+          }
         }
       ],
       "expo-video",
       "expo-web-browser"
     ],
-    "experiments": { "typedRoutes": true, "reactCompiler": true },
-    "extra": { "router": {} }
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "extra": {
+      "router": {}
+    }
   }
 }

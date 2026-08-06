@@ -2,28 +2,41 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
-    ActivityIndicator,
-    Dimensions,
-    FlatList,
-    Pressable,
-    Text,
-    View,
+  ActivityIndicator,
+  Dimensions,
+  FlatList,
+  Pressable,
+  Text,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ClipCard from "../../src/components/clips/ClipCard.jsx";
 import ClipComments from "../../src/components/clips/ClipComments.jsx";
-import { fetchClipFeed } from "../../src/services/clipService.js";
+import { useLanguage } from "../../src/i18n/LanguageContext";
+import { supabase } from "../../src/lib/supabase";
+import {
+  fetchClipFeed,
+  fetchLikedClipIds,
+} from "../../src/services/clipService.js";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 const ClipsFeed = () => {
+  const { t } = useLanguage();
   const [clips, setClips] = useState([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [activeCommentsClipId, setActiveCommentsClipId] = useState(null);
+  const [currentUserId, setCurrentUserId] = useState(null);
   const loadedPages = useRef(new Set());
+
+  useEffect(() => {
+    supabase.auth
+      .getUser()
+      .then(({ data }) => setCurrentUserId(data.user?.id ?? null));
+  }, []);
 
   const loadPage = useCallback(async (nextPage) => {
     if (loadedPages.current.has(nextPage)) return;
@@ -34,8 +47,19 @@ const ClipsFeed = () => {
 
     try {
       const results = await fetchClipFeed(nextPage);
-      setClips((prev) => (nextPage === 0 ? results : [...prev, ...results]));
+      const likedIds = await fetchLikedClipIds(results.map((r) => r.id));
+      const likedSet = new Set(likedIds);
+      const withLiked = results.map((r) => ({
+        ...r,
+        liked: likedSet.has(r.id),
+      }));
+
+      setClips((prev) =>
+        nextPage === 0 ? withLiked : [...prev, ...withLiked],
+      );
       setHasMore(results.length > 0);
+    } catch (e) {
+      console.error("loadPage error:", e);
     } finally {
       setLoading(false);
       setLoadingMore(false);
@@ -52,6 +76,20 @@ const ClipsFeed = () => {
     setPage(nextPage);
     loadPage(nextPage);
   };
+
+  const handleCommentPosted = useCallback((clipId) => {
+    setClips((prev) =>
+      prev.map((c) =>
+        c.id === clipId
+          ? { ...c, comment_count: (c.comment_count ?? 0) + 1 }
+          : c,
+      ),
+    );
+  }, []);
+
+  const handleClipDeleted = useCallback((clipId) => {
+    setClips((prev) => prev.filter((c) => c.id !== clipId));
+  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "black" }} edges={["top"]}>
@@ -93,7 +131,12 @@ const ClipsFeed = () => {
           onEndReached={handleEndReached}
           renderItem={({ item }) => (
             <View style={{ height: SCREEN_HEIGHT }}>
-              <ClipCard clip={item} onOpenComments={setActiveCommentsClipId} />
+              <ClipCard
+                clip={item}
+                onOpenComments={setActiveCommentsClipId}
+                currentUserId={currentUserId}
+                onDeleted={handleClipDeleted}
+              />
             </View>
           )}
           ListFooterComponent={
@@ -109,10 +152,14 @@ const ClipsFeed = () => {
                 height: SCREEN_HEIGHT,
                 alignItems: "center",
                 justifyContent: "center",
+                paddingHorizontal: 40,
               }}
             >
-              <Text style={{ color: "#94a3b8" }}>
-                No clips yet — be the first to post one.
+              <Ionicons name="film-outline" size={40} color="#334155" />
+              <Text
+                style={{ color: "#94a3b8", marginTop: 12, textAlign: "center" }}
+              >
+                {t("clips_empty")}
               </Text>
             </View>
           }
@@ -122,6 +169,7 @@ const ClipsFeed = () => {
       <ClipComments
         clipId={activeCommentsClipId}
         onClose={() => setActiveCommentsClipId(null)}
+        onCommentPosted={handleCommentPosted}
       />
     </SafeAreaView>
   );

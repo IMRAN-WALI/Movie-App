@@ -164,7 +164,7 @@ export default {
   trending_try_again: "دوبارہ کوشش کریں",
   trending_empty: "قریب کوئی ٹرینڈنگ فلم نہیں ملی",
   trending_refresh: "ریفریش",
-  trending_badge: "🔥 ٹرینڈنگ",
+  trending_badge: "ٹرینڈنگ",
   trending_views: "ویوز",
 
   tab_home: "ہوم",
@@ -194,4 +194,7 @@ export default {
   edit_saved_title: "پروفائل اپڈیٹ ہو گیا",
   edit_saved_msg: "آپ کی تبدیلیاں محفوظ ہو گئیں۔",
   edit_save_error: "پروفائل محفوظ نہیں ہو سکا۔ دوبارہ کوشش کریں۔",
+
+  clips_save: "گیلری میں محفوظ کریں",
+  clips_saved: "کلپ محفوظ ہو گیا!",
 };

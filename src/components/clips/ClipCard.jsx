@@ -1,15 +1,20 @@
 import React, { useState } from "react";
-import { View, Text, Pressable, Share } from "react-native";
+import { Alert, Text, Pressable, Share, View } from "react-native";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { Ionicons } from "@expo/vector-icons";
-import { toggleLike } from "../../services/clipService";
+import { useLanguage } from "../../i18n/LanguageContext";
+import { deleteClip, toggleLike } from "../../services/clipService";
 
-const ClipCard = ({ clip, onOpenComments }) => {
+const ClipCard = ({ clip, onOpenComments, currentUserId, onDeleted }) => {
+  const { t } = useLanguage();
   const player = useVideoPlayer(clip.video_url ?? "", (p) => {
     p.loop = true;
   });
-  const [liked, setLiked] = useState(false);
+  const [liked, setLiked] = useState(Boolean(clip.liked));
   const [likeCount, setLikeCount] = useState(clip.like_count ?? 0);
+  const [deleting, setDeleting] = useState(false);
+
+  const isOwner = currentUserId && clip.user_id === currentUserId;
 
   const handleLike = async () => {
     const next = !liked;
@@ -17,7 +22,8 @@ const ClipCard = ({ clip, onOpenComments }) => {
     setLikeCount((c) => c + (next ? 1 : -1));
     try {
       await toggleLike(clip.id, next);
-    } catch {
+    } catch (e) {
+      console.error("toggleLike error:", e);
       setLiked(!next);
       setLikeCount((c) => c + (next ? -1 : 1));
     }
@@ -31,6 +37,32 @@ const ClipCard = ({ clip, onOpenComments }) => {
     });
   };
 
+  const handleDelete = () => {
+    Alert.alert(
+      t("clips_delete_confirm_title"),
+      t("clips_delete_confirm_message"),
+      [
+        { text: t("profile_cancel"), style: "cancel" },
+        {
+          text: t("clips_delete"),
+          style: "destructive",
+          onPress: async () => {
+            setDeleting(true);
+            try {
+              await deleteClip(clip.id);
+              onDeleted?.(clip.id);
+            } catch (e) {
+              console.error("deleteClip error:", e);
+              Alert.alert(t("common_error"), t("clips_delete_error"));
+            } finally {
+              setDeleting(false);
+            }
+          },
+        },
+      ],
+    );
+  };
+
   return (
     <View
       style={{ width: "100%", aspectRatio: 9 / 16, backgroundColor: "black" }}
@@ -38,6 +70,7 @@ const ClipCard = ({ clip, onOpenComments }) => {
       <Pressable
         style={{ flex: 1 }}
         onPress={() => (player.playing ? player.pause() : player.play())}
+        onLongPress={isOwner ? handleDelete : undefined}
       >
         <VideoView player={player} style={{ flex: 1 }} nativeControls={false} />
       </Pressable>
@@ -79,6 +112,16 @@ const ClipCard = ({ clip, onOpenComments }) => {
         <Pressable onPress={handleShare} style={{ alignItems: "center" }}>
           <Ionicons name="arrow-redo-outline" size={28} color="white" />
         </Pressable>
+
+        {isOwner && (
+          <Pressable
+            onPress={handleDelete}
+            disabled={deleting}
+            style={{ alignItems: "center" }}
+          >
+            <Ionicons name="trash-outline" size={24} color="#f87171" />
+          </Pressable>
+        )}
       </View>
     </View>
   );

@@ -178,7 +178,7 @@ export default {
   trending_try_again: "Try Again",
   trending_empty: "No trending movies found nearby",
   trending_refresh: "Refresh",
-  trending_badge: "🔥 Trending",
+  trending_badge: " Trending",
   trending_views: "views",
 
   // Tabs
@@ -210,4 +210,24 @@ export default {
   edit_saved_title: "Profile updated",
   edit_saved_msg: "Your changes have been saved.",
   edit_save_error: "Could not save profile. Try again.",
+
+  // Clips (add these inside the existing clips_ block)
+  clips_comments_title: "Comments",
+  clips_comment_placeholder: "Add a comment…",
+  clips_post_comment: "Post",
+  clips_no_comments_yet: "No comments yet",
+  clips_be_first: "Be the first to comment",
+  clips_delete: "Delete",
+  clips_delete_confirm_title: "Delete clip",
+  clips_delete_confirm_message: "This clip will be permanently deleted.",
+  clips_load_comments_error: "Couldn't load comments",
+  clips_post_comment_error: "Couldn't post comment",
+  clips_delete_error: "Couldn't delete clip",
+
+  player_no_video: "This movie doesn't have a video available yet.",
+  player_clip_this_moment: "Clip This Moment",
+  clips_from_movie: "From",
+
+  clips_save: "Save to Gallery",
+  clips_saved: "Clip saved!",
 };
