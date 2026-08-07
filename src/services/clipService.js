@@ -1,4 +1,4 @@
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import { decode } from "base64-arraybuffer";
 import { invokeEdgeFunction, supabase } from "../lib/supabase";
 
@@ -37,9 +37,21 @@ export async function createClip(params) {
     throw new Error(error.message || "Failed to save clip");
   }
 
-  invokeEdgeFunction("clip-trim", { clipId: clip.id }).catch((e) =>
-    console.log("clip-trim not available (non-fatal):", e?.message),
-  );
+  // NOTE: Trimming now happens CLIENT-SIDE (via react-native-video-trim,
+  // see src/utils/trimVideo.js) before this function is ever called — the
+  // uploaded file at params.sourceVideoUrl is already just the selected
+  // clip range, not the full source video. We no longer depend on a
+  // server-side "clip-trim" edge function to cut the video down, so the
+  // clip is correct and playable immediately, with no async wait.
+  //
+  // If you have a real "clip-trim" edge function that does OTHER
+  // post-processing (e.g. compression, thumbnail generation), it's still
+  // safe to keep calling it here — it just isn't required for correctness
+  // anymore. Uncomment if you want that:
+  //
+  // invokeEdgeFunction("clip-trim", { clipId: clip.id }).catch((e) =>
+  //   console.log("clip-trim not available (non-fatal):", e?.message),
+  // );
 
   return clip;
 }

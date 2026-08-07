@@ -1,5 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as MediaLibrary from "expo-media-library";
+import * as FileSystem from "expo-file-system/legacy";
+import { trim } from "react-native-video-trim";
 
 const SAVED_CLIPS_KEY = "saved_clips";
 
@@ -33,6 +35,16 @@ export const getSavedClips = async () => {
 export const deleteSavedClip = async (clipId) => {
   try {
     const clips = await getSavedClips();
+    const clipToDelete = clips.find((c) => c.id === clipId);
+
+    if (clipToDelete?.videoUri?.startsWith(FileSystem.documentDirectory)) {
+      await FileSystem.deleteAsync(clipToDelete.videoUri, {
+        idempotent: true,
+      }).catch((e) =>
+        console.log("⚠️ Could not delete local clip file:", e?.message),
+      );
+    }
+
     const updated = clips.filter((c) => c.id !== clipId);
     await AsyncStorage.setItem(SAVED_CLIPS_KEY, JSON.stringify(updated));
     return updated;
@@ -43,23 +55,28 @@ export const deleteSavedClip = async (clipId) => {
 };
 
 export const trimVideoWithFFmpeg = async (inputUri, startTime, endTime) => {
-  console.log(
-    "⚠️ FFmpeg not available in Expo Go — saving/sharing full video as-is",
-  );
-  return inputUri;
+  try {
+    const result = await trim(inputUri, {
+      startTime: Math.round(startTime * 1000),
+      endTime: Math.round(endTime * 1000),
+    });
+
+    const outputPath = result?.outputPath;
+    if (!outputPath) {
+      console.log("⚠️ trim() returned no outputPath, using original video");
+      return inputUri;
+    }
+
+    console.log("✅ Trim success:", outputPath);
+    return outputPath.startsWith("file://")
+      ? outputPath
+      : `file://${outputPath}`;
+  } catch (error) {
+    console.log("❌ trim() failed, falling back to full video:", error);
+    return inputUri;
+  }
 };
 
-// NOTE ON WHY THIS IS TRICKY:
-// The uri the gallery picker gives us (content://...) is only guaranteed
-// playable for as long as we're still "in" that picking session. Once we
-// navigate to another screen and come back later, Android can revoke that
-// grant, which is exactly what caused "Couldn't play this video" on the
-// Saved Clips screen even though the same uri played fine in the trimmer.
-//
-// The fix: after MediaLibrary copies the video into the gallery, we ask
-// MediaLibrary itself — via getAssetInfoAsync — for a fresh, persistent,
-// playable uri for THAT copy (not the original picker uri). This is the
-// uri we store and reuse for in-app preview.
 export const saveVideoToGallery = async (videoUri, start, end, caption) => {
   try {
     const { status } = await MediaLibrary.requestPermissionsAsync();
@@ -69,17 +86,34 @@ export const saveVideoToGallery = async (videoUri, start, end, caption) => {
       );
     }
 
-    console.log("💾 Saving video to gallery from URI:", videoUri);
+    console.log("💾 Saving video:", videoUri, "range", start, "-", end);
 
-    const asset = await MediaLibrary.createAssetAsync(videoUri);
-    console.log("✅ Asset created:", asset.id, "uri:", asset.uri);
+    const trimmedUri = await trimVideoWithFFmpeg(videoUri, start, end);
 
-    await MediaLibrary.createAlbumAsync("Movie Clips", asset, false);
-    console.log("✅ Added to 'Movie Clips' album");
+    const clipsDir = `${FileSystem.documentDirectory}clips/`;
+    await FileSystem.makeDirectoryAsync(clipsDir, {
+      intermediates: true,
+    }).catch(() => {});
+
+    const localCopyPath = `${clipsDir}${Date.now()}.mp4`;
+    await FileSystem.copyAsync({ from: trimmedUri, to: localCopyPath });
+    console.log("✅ Local app copy saved:", localCopyPath);
+
+    let assetId = null;
+    try {
+      const asset = await MediaLibrary.createAssetAsync(trimmedUri);
+      await MediaLibrary.createAlbumAsync("Movie Clips", asset, false);
+      assetId = asset.id;
+      console.log("✅ Also saved to gallery album, asset id:", assetId);
+    } catch (galleryError) {
+      // Not fatal — the app-local copy is what actually matters for the
+      // in-app experience, so don't block save on gallery failing.
+      console.log("⚠️ Gallery save failed (non-fatal):", galleryError);
+    }
 
     const clipData = {
-      videoUri: asset.uri,
-      assetId: asset.id,
+      videoUri: localCopyPath, // ← always use this for play/share in-app
+      assetId,
       startSeconds: start,
       endSeconds: end,
       duration: (end - start).toFixed(1),
