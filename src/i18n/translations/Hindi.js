@@ -6,6 +6,7 @@ export default {
   profile_saved: "सहेजी गई",
   profile_your_activity: "आपकी गतिविधि",
   profile_watch_history: "देखने का इतिहास",
+  profile_downloads: "डाउनलोड्स",
   profile_account: "खाता",
   profile_edit_profile: "प्रोफ़ाइल संपादित करें",
   profile_change_password: "पासवर्ड बदलें",

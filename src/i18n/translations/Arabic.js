@@ -6,6 +6,7 @@ export default {
   profile_saved: "محفوظ",
   profile_your_activity: "نشاطك",
   profile_watch_history: "سجل المشاهدة",
+  profile_downloads: "التنزيلات",
   profile_account: "الحساب",
   profile_edit_profile: "تعديل الملف الشخصي",
   profile_change_password: "تغيير كلمة المرور",

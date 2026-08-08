@@ -7,6 +7,7 @@ export default {
   profile_saved: "Saved",
   profile_your_activity: "Your Activity",
   profile_watch_history: "Watch History",
+  profile_downloads: "Downloads",
   profile_account: "Account",
   profile_edit_profile: "Edit Profile",
   profile_change_password: "Change Password",

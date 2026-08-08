@@ -316,6 +316,11 @@ const Profile = () => {
                 icon="time-outline"
                 label={t("profile_watch_history")}
                 onPress={() => router.push("/profile/history")}
+              />
+              <MenuItem
+                icon="download-outline"
+                label={t("Downloads")}
+                onPress={() => router.push("/downloads")}
                 isLast
               />
             </MenuSection>

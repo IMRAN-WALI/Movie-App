@@ -6,6 +6,7 @@ export default {
   profile_saved: "محفوظ شدہ",
   profile_your_activity: "آپ کی سرگرمی",
   profile_watch_history: "دیکھنے کی تاریخ",
+  profile_downloads: "ڈاؤن لوڈز",
   profile_account: "اکاؤنٹ",
   profile_edit_profile: "پروفائل میں ترمیم کریں",
   profile_change_password: "پاسورڈ تبدیل کریں",

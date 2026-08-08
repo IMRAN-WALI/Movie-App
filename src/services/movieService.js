@@ -8,7 +8,7 @@ export async function searchMovies(query) {
   const { data, error } = await supabase
     .from("movies")
     .select(
-      "id, title, poster_url, release_date, genres, vote_average, runtime",
+      "id, title, poster_url, release_date, genres, vote_average, runtime, video_url",
     )
     .ilike("title", `%${q}%`)
     .order("vote_average", { ascending: false, nullsFirst: false })
