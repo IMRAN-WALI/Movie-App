@@ -25,10 +25,12 @@ const WatchPartyLobby = () => {
 
   const handleCreate = async () => {
     if (!movieId) {
-      Alert.alert(
-        "Pick a movie first",
-        'Open a movie and choose "Watch Party" to host one.',
-      );
+      // No movie attached to this screen yet — send the user to their
+      // Downloads so they can pick a movie to host a party for.
+      router.push({
+        pathname: "/downloads",
+        params: { selectFor: "party" },
+      });
       return;
     }
     setLoading(true);

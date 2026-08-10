@@ -6,12 +6,16 @@ import DirectorAffinity from "../../components/taste-dna/DirectorAffinity";
 import GenreProgressRing from "../../components/taste-dna/GenreProgressRing";
 
 const RING_COLORS = [
-  ["#38bdf8", "#6366f1"],
-  ["#a78bfa", "#38bdf8"],
-  ["#f472b6", "#818cf8"],
-  ["#34d399", "#38bdf8"],
-  ["#facc15", "#f472b6"],
-  ["#818cf8", "#4f46e5"],
+  ["#ef4444", "#f97316"], // red → orange
+  ["#f97316", "#eab308"], // orange → yellow
+  ["#eab308", "#22c55e"], // yellow → green
+  ["#22c55e", "#3b82f6"], // green → blue
+  ["#3b82f6", "#6366f1"], // blue → indigo
+  ["#6366f1", "#8b5cf6"], // indigo → violet
+  ["#8b5cf6", "#a78bfa"], // violet
+  ["#a16207", "#78716c"], // brown → grey
+  ["#78716c", "#a1a1aa"], // grey
+  ["#e4e4e7", "#ffffff"], // white
 ];
 
 const SectionHeading = ({ icon, title }) => (
@@ -21,9 +25,9 @@ const SectionHeading = ({ icon, title }) => (
       alignItems: "center",
       alignSelf: "flex-start",
       gap: 7,
-      backgroundColor: "rgba(255,255,255,0.1)",
+      backgroundColor: "rgba(255,255,255,0.12)",
       borderWidth: 1,
-      borderColor: "rgba(255,255,255,0.16)",
+      borderColor: "rgba(255,255,255,0.18)",
       borderRadius: 999,
       paddingVertical: 7,
       paddingHorizontal: 14,
@@ -75,10 +79,19 @@ const TasteCard = ({ profile }) => {
   return (
     <Animated.View style={{ opacity: fade, transform: [{ translateY }] }}>
       <LinearGradient
-        colors={["#7c3aed", "#4f46e5", "#0ea5e9"]}
+        colors={[
+          "rgba(124,58,237,0.72)",
+          "rgba(79,70,229,0.68)",
+          "rgba(14,165,233,0.62)",
+        ]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={{ borderRadius: 28, padding: 24 }}
+        style={{
+          borderRadius: 28,
+          padding: 24,
+          borderWidth: 1,
+          borderColor: "rgba(255,255,255,0.14)",
+        }}
       >
         {/* Header */}
         <View
@@ -103,7 +116,7 @@ const TasteCard = ({ profile }) => {
           </View>
           <Text
             style={{
-              color: "rgba(255,255,255,0.75)",
+              color: "rgba(255,255,255,0.8)",
               fontSize: 12,
               fontWeight: "700",
               letterSpacing: 1.2,
@@ -113,7 +126,7 @@ const TasteCard = ({ profile }) => {
           </Text>
         </View>
 
-        {/* Genres — circular progress rings */}
+        {/* Genres */}
         <View
           style={{
             backgroundColor: "rgba(255,255,255,0.08)",
@@ -171,7 +184,11 @@ const TasteCard = ({ profile }) => {
                 >
                   <Ionicons name="time-outline" size={13} color="white" />
                   <Text
-                    style={{ color: "white", fontSize: 13, fontWeight: "600" }}
+                    style={{
+                      color: "white",
+                      fontSize: 13,
+                      fontWeight: "600",
+                    }}
                   >
                     {era} · {Math.round(pct)}%
                   </Text>
@@ -183,7 +200,7 @@ const TasteCard = ({ profile }) => {
 
         <Text
           style={{
-            color: "rgba(255,255,255,0.55)",
+            color: "rgba(255,255,255,0.6)",
             fontSize: 12,
             marginTop: 24,
           }}

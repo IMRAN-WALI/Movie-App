@@ -21,6 +21,9 @@ import {
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
+// Instagram style gap for next video preview
+const ITEM_HEIGHT = SCREEN_HEIGHT - 20;
+
 const ClipsFeed = () => {
   const { t } = useLanguage();
   const [clips, setClips] = useState([]);
@@ -92,86 +95,110 @@ const ClipsFeed = () => {
   }, []);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "black" }} edges={["top"]}>
-      <View
-        style={{
-          position: "absolute",
-          top: 50,
-          right: 16,
-          zIndex: 10,
-        }}
-      >
-        <Pressable
-          onPress={() => router.push("/clips/create")}
+    <View style={{ flex: 1, backgroundColor: "#000" }}>
+      <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
+        {/* Add Button (+ icon) */}
+        <View
           style={{
-            backgroundColor: "rgba(255,255,255,0.15)",
-            borderRadius: 20,
-            padding: 10,
+            position: "absolute",
+            top: 40,
+            right: 16,
+            zIndex: 10,
           }}
         >
-          <Ionicons name="add" size={22} color="white" />
-        </Pressable>
-      </View>
-
-      {loading ? (
-        <View
-          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-        >
-          <ActivityIndicator color="white" />
+          <Pressable
+            onPress={() => router.push("/clips/create")}
+            style={{
+              backgroundColor: "rgba(255,255,255,0.15)",
+              borderRadius: 20,
+              padding: 10,
+              borderWidth: 1,
+              borderColor: "rgba(255,255,255,0.12)",
+            }}
+          >
+            <Ionicons name="add" size={24} color="white" />
+          </Pressable>
         </View>
-      ) : (
-        <FlatList
-          data={clips}
-          keyExtractor={(item) => item.id}
-          pagingEnabled
-          showsVerticalScrollIndicator={false}
-          snapToInterval={SCREEN_HEIGHT}
-          decelerationRate="fast"
-          onEndReachedThreshold={2}
-          onEndReached={handleEndReached}
-          renderItem={({ item }) => (
-            <View style={{ height: SCREEN_HEIGHT }}>
-              <ClipCard
-                clip={item}
-                onOpenComments={setActiveCommentsClipId}
-                currentUserId={currentUserId}
-                onDeleted={handleClipDeleted}
-              />
-            </View>
-          )}
-          ListFooterComponent={
-            loadingMore ? (
-              <View style={{ padding: 20, alignItems: "center" }}>
-                <ActivityIndicator color="white" />
-              </View>
-            ) : null
-          }
-          ListEmptyComponent={
-            <View
-              style={{
-                height: SCREEN_HEIGHT,
-                alignItems: "center",
-                justifyContent: "center",
-                paddingHorizontal: 40,
-              }}
-            >
-              <Ionicons name="film-outline" size={40} color="#334155" />
-              <Text
-                style={{ color: "#94a3b8", marginTop: 12, textAlign: "center" }}
-              >
-                {t("clips_empty")}
-              </Text>
-            </View>
-          }
-        />
-      )}
 
-      <ClipComments
-        clipId={activeCommentsClipId}
-        onClose={() => setActiveCommentsClipId(null)}
-        onCommentPosted={handleCommentPosted}
-      />
-    </SafeAreaView>
+        {loading ? (
+          <View
+            style={{
+              flex: 1,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <ActivityIndicator color="white" size="large" />
+          </View>
+        ) : (
+          <FlatList
+            data={clips}
+            keyExtractor={(item) => item.id}
+            pagingEnabled
+            showsVerticalScrollIndicator={false}
+            // 💡 Magic: Next video ka top edge dikhane ke liye
+            snapToInterval={ITEM_HEIGHT}
+            snapToAlignment="start"
+            decelerationRate="fast"
+            onEndReachedThreshold={2}
+            onEndReached={handleEndReached}
+            renderItem={({ item }) => (
+              <View
+                style={{
+                  height: ITEM_HEIGHT,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <View style={{ width: "100%", height: "100%" }}>
+                  <ClipCard
+                    clip={item}
+                    onOpenComments={setActiveCommentsClipId}
+                    currentUserId={currentUserId}
+                    onDeleted={handleClipDeleted}
+                  />
+                </View>
+              </View>
+            )}
+            ListFooterComponent={
+              loadingMore ? (
+                <View style={{ padding: 25, alignItems: "center" }}>
+                  <ActivityIndicator color="white" size="large" />
+                </View>
+              ) : null
+            }
+            ListEmptyComponent={
+              <View
+                style={{
+                  height: SCREEN_HEIGHT * 0.8,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  paddingHorizontal: 40,
+                }}
+              >
+                <Ionicons name="film-outline" size={50} color="#64748b" />
+                <Text
+                  style={{
+                    color: "#94a3b8",
+                    marginTop: 16,
+                    fontSize: 16,
+                    textAlign: "center",
+                  }}
+                >
+                  {t("clips_empty") || "No clips available"}
+                </Text>
+              </View>
+            }
+          />
+        )}
+
+        <ClipComments
+          clipId={activeCommentsClipId}
+          onClose={() => setActiveCommentsClipId(null)}
+          onCommentPosted={handleCommentPosted}
+        />
+      </SafeAreaView>
+    </View>
   );
 };
 

@@ -5,6 +5,7 @@ import {
   ActivityIndicator,
   Alert,
   FlatList,
+  ImageBackground,
   Pressable,
   Share,
   Text,
@@ -72,10 +73,6 @@ const SavedClipsScreen = () => {
     }
   };
 
-  // expo-sharing's shareAsync reliably opens the native Android/iOS share
-  // sheet for a local content:// / file:// uri in Expo Go — this is more
-  // reliable than launching a VIEW intent directly, which kept failing.
-  // From the share sheet, pick any video player or "Gallery" to watch it.
   const handleOpenExternally = async (clip) => {
     setOpening(clip.id);
     try {
@@ -102,7 +99,7 @@ const SavedClipsScreen = () => {
     <Pressable
       onPress={() => handleOpenExternally(item)}
       style={{
-        backgroundColor: "rgba(255,255,255,0.06)",
+        backgroundColor: "rgba(255,255,255,0.08)",
         borderRadius: 16,
         padding: 12,
         marginBottom: 12,
@@ -115,7 +112,7 @@ const SavedClipsScreen = () => {
           width: 60,
           height: 60,
           borderRadius: 10,
-          backgroundColor: "#1e293b",
+          backgroundColor: "rgba(30,41,59,0.9)",
           alignItems: "center",
           justifyContent: "center",
         }}
@@ -170,124 +167,136 @@ const SavedClipsScreen = () => {
     </Pressable>
   );
 
-  if (loading) {
-    return (
-      <SafeAreaView
-        style={{
-          flex: 1,
-          backgroundColor: "#0f172a",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <ActivityIndicator color="white" />
-      </SafeAreaView>
-    );
-  }
-
   return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: "#0f172a" }}
-      edges={["top"]}
+    <ImageBackground
+      source={require("../../assets/Images/Saved.png")}
+      style={{ flex: 1 }}
+      resizeMode="cover"
     >
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          paddingHorizontal: 16,
-          paddingTop: 12,
-          paddingBottom: 8,
-          gap: 12,
-        }}
-      >
-        <Pressable
-          onPress={() => router.back()}
-          hitSlop={12}
-          style={{
-            width: 36,
-            height: 36,
-            borderRadius: 18,
-            backgroundColor: "rgba(255,255,255,0.08)",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Ionicons name="arrow-back" size={20} color="white" />
-        </Pressable>
-        <Text style={{ color: "white", fontSize: 20, fontWeight: "800" }}>
-          Saved Clips
-        </Text>
-        <Text style={{ color: "#64748b", fontSize: 14, marginLeft: "auto" }}>
-          {clips.length} clips
-        </Text>
+      <View style={{ flex: 1, backgroundColor: "rgba(15,23,42,0)" }}>
+        <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
+          {loading ? (
+            <View
+              style={{
+                flex: 1,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <ActivityIndicator color="white" />
+            </View>
+          ) : (
+            <>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  paddingHorizontal: 16,
+                  paddingTop: 12,
+                  paddingBottom: 8,
+                  gap: 12,
+                }}
+              >
+                <Pressable
+                  onPress={() => router.back()}
+                  hitSlop={12}
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 18,
+                    backgroundColor: "rgba(255,255,255,0.1)",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Ionicons name="arrow-back" size={20} color="white" />
+                </Pressable>
+                <Text
+                  style={{ color: "white", fontSize: 20, fontWeight: "800" }}
+                >
+                  Saved Clips
+                </Text>
+                <Text
+                  style={{
+                    color: "#94a3b8",
+                    fontSize: 14,
+                    marginLeft: "auto",
+                  }}
+                >
+                  {clips.length} clips
+                </Text>
+              </View>
+
+              <Text
+                style={{
+                  color: "#94a3b8",
+                  fontSize: 12,
+                  paddingHorizontal: 16,
+                  marginBottom: 12,
+                }}
+              >
+                Tap a clip, then choose a player from the menu to watch it
+              </Text>
+
+              {clips.length === 0 ? (
+                <View
+                  style={{
+                    flex: 1,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    paddingHorizontal: 40,
+                  }}
+                >
+                  <Ionicons name="bookmark-outline" size={60} color="#64748b" />
+                  <Text
+                    style={{
+                      color: "#94a3b8",
+                      fontSize: 16,
+                      marginTop: 16,
+                      textAlign: "center",
+                    }}
+                  >
+                    No saved clips yet
+                  </Text>
+                  <Text
+                    style={{
+                      color: "#64748b",
+                      fontSize: 13,
+                      marginTop: 8,
+                      textAlign: "center",
+                    }}
+                  >
+                    Trim and save clips from the create screen
+                  </Text>
+                  <Pressable
+                    onPress={() => router.push("/clips/create")}
+                    style={{
+                      marginTop: 20,
+                      backgroundColor: "#4f46e5",
+                      paddingHorizontal: 24,
+                      paddingVertical: 12,
+                      borderRadius: 999,
+                    }}
+                  >
+                    <Text style={{ color: "white", fontWeight: "700" }}>
+                      Create New Clip
+                    </Text>
+                  </Pressable>
+                </View>
+              ) : (
+                <FlatList
+                  data={clips}
+                  renderItem={renderItem}
+                  keyExtractor={(item) => item.id}
+                  contentContainerStyle={{ padding: 16 }}
+                  showsVerticalScrollIndicator={false}
+                />
+              )}
+            </>
+          )}
+        </SafeAreaView>
       </View>
-
-      <Text
-        style={{
-          color: "#64748b",
-          fontSize: 12,
-          paddingHorizontal: 16,
-          marginBottom: 12,
-        }}
-      >
-        Tap a clip, then choose a player from the menu to watch it
-      </Text>
-
-      {clips.length === 0 ? (
-        <View
-          style={{
-            flex: 1,
-            alignItems: "center",
-            justifyContent: "center",
-            paddingHorizontal: 40,
-          }}
-        >
-          <Ionicons name="bookmark-outline" size={60} color="#334155" />
-          <Text
-            style={{
-              color: "#64748b",
-              fontSize: 16,
-              marginTop: 16,
-              textAlign: "center",
-            }}
-          >
-            No saved clips yet
-          </Text>
-          <Text
-            style={{
-              color: "#475569",
-              fontSize: 13,
-              marginTop: 8,
-              textAlign: "center",
-            }}
-          >
-            Trim and save clips from the create screen
-          </Text>
-          <Pressable
-            onPress={() => router.push("/clips/create")}
-            style={{
-              marginTop: 20,
-              backgroundColor: "#4f46e5",
-              paddingHorizontal: 24,
-              paddingVertical: 12,
-              borderRadius: 999,
-            }}
-          >
-            <Text style={{ color: "white", fontWeight: "700" }}>
-              Create New Clip
-            </Text>
-          </Pressable>
-        </View>
-      ) : (
-        <FlatList
-          data={clips}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={{ padding: 16 }}
-          showsVerticalScrollIndicator={false}
-        />
-      )}
-    </SafeAreaView>
+    </ImageBackground>
   );
 };
 

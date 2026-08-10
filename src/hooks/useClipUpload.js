@@ -26,10 +26,23 @@ export function useClipUpload() {
           endSeconds,
         });
 
+        // IMPORTANT FIX: Get user with proper error handling
         const {
           data: { user },
+          error: userError,
         } = await supabase.auth.getUser();
-        if (!user) throw new Error("You must be logged in to post a clip.");
+
+        if (userError) {
+          console.error("❌ Auth error:", userError);
+          throw new Error("Authentication error. Please login again.");
+        }
+
+        if (!user) {
+          console.error("❌ No user found");
+          throw new Error("You must be logged in to post a clip.");
+        }
+
+        console.log("✅ User authenticated:", user.id);
 
         // Works for both: a locally-picked gallery video, or a movie's
         // own remote stream url — react-native-video-trim's trim()
@@ -38,42 +51,52 @@ export function useClipUpload() {
         if (!inputUri) throw new Error("No video selected.");
 
         // 1️⃣ Trim to the exact selected range BEFORE uploading anything.
-        // This is the actual fix — previously we uploaded the full,
-        // untrimmed video and only stored start/end as numbers in the
-        // database, so the feed always showed the full clip.
         setProgressLabel("Trimming clip…");
+        console.log(
+          "🔄 Trimming video:",
+          inputUri,
+          "from",
+          startSeconds,
+          "to",
+          endSeconds,
+        );
         const trimmedLocalUri = await trimVideoToRange(
           inputUri,
           startSeconds,
           endSeconds,
         );
+        console.log("✅ Trimmed:", trimmedLocalUri);
 
-        // 2️⃣ Upload the already-trimmed file to Supabase Storage so it
-        // has a stable public URL that other users can stream from (a
-        // local device file path is useless to anyone but this device).
+        // 2️⃣ Upload the already-trimmed file to Supabase Storage
         setProgressLabel("Uploading clip…");
-        console.log("🔄 Uploading trimmed video:", trimmedLocalUri);
+        console.log("🔄 Uploading trimmed video to Supabase...");
         const sourceUrl = await uploadSourceVideo(trimmedLocalUri, user.id);
         console.log("✅ Uploaded, public URL:", sourceUrl);
 
-        // 3️⃣ Create the DB row. The uploaded file IS the clip now (it's
-        // already been cut to size), so we store 0 → duration rather
-        // than the original start/end from the source video/stream.
+        if (!sourceUrl) {
+          throw new Error("Failed to upload video. Please try again.");
+        }
+
+        // 3️⃣ Create the DB row
         setProgressLabel("Creating clip…");
+        console.log("🔄 Creating clip in database...");
+
+        // Calculate final duration
+        const duration = Math.round((endSeconds - startSeconds) * 10) / 10;
+
         const clip = await createClip({
-          movieId,
+          movieId: movieId || null, // Ensure null if undefined
           sourceVideoUrl: sourceUrl,
           startSeconds: 0,
-          endSeconds: Math.round((endSeconds - startSeconds) * 10) / 10,
-          caption,
+          endSeconds: duration,
+          caption: caption || null,
+          userId: user.id, // Explicitly pass userId
         });
 
         console.log("✅ Clip created:", clip?.id);
         return clip;
       } catch (e) {
         console.log("❌ submitClip failed:", e);
-        // Re-throw so the screen can show the exact message to the user
-        // instead of failing silently.
         throw e;
       } finally {
         setUploading(false);
