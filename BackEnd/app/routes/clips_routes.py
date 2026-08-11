@@ -1,11 +1,12 @@
+# BackEnd/app/routes/clips_routes.py
 from flask import Blueprint, jsonify, g, request
 from app.utils.auth_middleware import require_auth
 from app.utils.error_handlers import api_error
-from app.services.clip_service import upload_clip
+from app.services.clip_service import upload_clip, get_user_clips, delete_clip, get_clip_feed, toggle_like
 
 clips_bp = Blueprint("clips", __name__)
 
-ALLOWED_EXTENSIONS = {"mp4", "mov", "m4v"}
+ALLOWED_EXTENSIONS = {"mp4", "mov", "m4v", "avi", "mkv"}
 
 
 def _allowed_file(filename):
@@ -23,7 +24,7 @@ def upload():
         return api_error("No file selected", 400)
 
     if not _allowed_file(file_storage.filename):
-        return api_error("Only .mp4, .mov, and .m4v clips are supported", 400)
+        return api_error("Only .mp4, .mov, .m4v, .avi, .mkv clips are supported", 400)
 
     movie_id = request.form.get("movie_id")
     caption = request.form.get("caption")
@@ -43,3 +44,41 @@ def upload():
         return jsonify(clip), 201
     except Exception as e:
         return api_error(f"Failed to upload clip: {str(e)}", 500)
+
+@clips_bp.get("/my")
+@require_auth
+def my_clips():
+    try:
+        clips = get_user_clips(g.user_id)
+        return jsonify({"clips": clips}), 200
+    except Exception as e:
+        return api_error(f"Failed to fetch clips: {str(e)}", 500)
+
+@clips_bp.delete("/<string:clip_id>")
+@require_auth
+def delete(clip_id):
+    try:
+        delete_clip(clip_id, g.user_id)
+        return jsonify({"message": "Clip deleted successfully"}), 200
+    except Exception as e:
+        return api_error(f"Failed to delete clip: {str(e)}", 500)
+
+@clips_bp.get("/feed")
+@require_auth
+def feed():
+    try:
+        limit = request.args.get("limit", 10, type=int)
+        offset = request.args.get("offset", 0, type=int)
+        clips = get_clip_feed(limit, offset)
+        return jsonify({"clips": clips}), 200
+    except Exception as e:
+        return api_error(f"Failed to fetch feed: {str(e)}", 500)
+
+@clips_bp.post("/<string:clip_id>/like")
+@require_auth
+def like(clip_id):
+    try:
+        result = toggle_like(clip_id, g.user_id)
+        return jsonify(result), 200
+    except Exception as e:
+        return api_error(f"Failed to toggle like: {str(e)}", 500)

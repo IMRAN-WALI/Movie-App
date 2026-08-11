@@ -253,3 +253,28 @@ drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
+
+-- ============================================
+-- UPDATE: Set unique video_url for ALL movies
+-- ============================================
+
+-- Pehle check karo ke kitni movies hain
+DO $$
+DECLARE
+  movie_count INTEGER;
+BEGIN
+  SELECT COUNT(*) INTO movie_count FROM movies;
+  RAISE NOTICE 'Total movies: %', movie_count;
+END $$;
+
+-- Sab movies ke liye unique video_url set karo
+-- Maan lo tumne videos upload ki hain movie_1.mp4, movie_2.mp4, ... movie_56.mp4
+UPDATE movies 
+SET video_url = 
+  'https://obnhtbeqxdyaldkcwoli.supabase.co/storage/v1/object/public/videos/movie_' || id || '.mp4'
+WHERE id >= 1;
+
+-- Verify update
+SELECT COUNT(*) as updated_count 
+FROM movies 
+WHERE video_url IS NOT NULL AND video_url != '';
