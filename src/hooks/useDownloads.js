@@ -4,11 +4,10 @@ import { downloadManager } from "../services/downloadService";
 
 export function useDownloads() {
   const [downloads, setDownloads] = useState([]);
-
   const [loading, setLoading] = useState(true);
 
   // ============================================
-  // LOAD ONCE
+  // LOAD DOWNLOADS
   // ============================================
 
   const loadDownloads = useCallback(async () => {
@@ -24,33 +23,33 @@ export function useDownloads() {
   }, []);
 
   // ============================================
-  // INITIAL LOAD + REAL-TIME LISTENER
+  // INITIAL LOAD + REAL-TIME UPDATES
   // ============================================
 
   useEffect(() => {
     let mounted = true;
 
     const init = async () => {
-      const data = await downloadManager.getDownloads();
+      try {
+        const data = await downloadManager.getDownloads();
 
-      if (mounted) {
-        setDownloads(Array.isArray(data) ? data : []);
+        if (mounted) {
+          setDownloads(Array.isArray(data) ? data : []);
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("❌ Downloads init error:", error);
 
-        setLoading(false);
+        if (mounted) {
+          setDownloads([]);
+          setLoading(false);
+        }
       }
     };
 
     init();
 
-    /*
-     * IMPORTANT:
-     *
-     * No setInterval here.
-     *
-     * DownloadManager itself sends
-     * progress updates.
-     */
-
+    // DownloadManager already sends progress updates.
     const unsubscribe = downloadManager.subscribe((data) => {
       if (!mounted) {
         return;
@@ -66,12 +65,25 @@ export function useDownloads() {
   }, []);
 
   // ============================================
-  // DOWNLOAD
+  // DOWNLOAD MOVIE
   // ============================================
 
   const downloadMovie = useCallback(
     async (movieId, title, posterUrl, videoUrl) => {
-      return downloadManager.addDownload(movieId, title, posterUrl, videoUrl);
+      if (!movieId) {
+        throw new Error("Movie ID is required.");
+      }
+
+      if (!videoUrl) {
+        throw new Error("Full movie download URL is missing.");
+      }
+
+      return await downloadManager.addDownload(
+        movieId,
+        title,
+        posterUrl,
+        videoUrl,
+      );
     },
     [],
   );
@@ -81,6 +93,10 @@ export function useDownloads() {
   // ============================================
 
   const deleteDownload = useCallback(async (id) => {
+    if (!id) {
+      return;
+    }
+
     await downloadManager.deleteDownload(id);
   }, []);
 
@@ -89,6 +105,10 @@ export function useDownloads() {
   // ============================================
 
   const pauseDownload = useCallback(async (id) => {
+    if (!id) {
+      return;
+    }
+
     await downloadManager.pauseDownload(id);
   }, []);
 
@@ -97,6 +117,10 @@ export function useDownloads() {
   // ============================================
 
   const resumeDownload = useCallback(async (id) => {
+    if (!id) {
+      return;
+    }
+
     await downloadManager.resumeDownload(id);
   }, []);
 
@@ -105,24 +129,26 @@ export function useDownloads() {
   // ============================================
 
   const refresh = useCallback(async () => {
-    const data = await downloadManager.getDownloads();
+    try {
+      const data = await downloadManager.getDownloads();
 
-    setDownloads(Array.isArray(data) ? data : []);
+      setDownloads(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("❌ Refresh downloads error:", error);
+    }
   }, []);
 
   return {
     downloads,
-
     loading,
 
     downloadMovie,
 
     deleteDownload,
-
     pauseDownload,
-
     resumeDownload,
 
     refresh,
+    loadDownloads,
   };
 }

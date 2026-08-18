@@ -12,10 +12,10 @@ const RING_COLORS = [
   ["#22c55e", "#3b82f6"], // green → blue
   ["#3b82f6", "#6366f1"], // blue → indigo
   ["#6366f1", "#8b5cf6"], // indigo → violet
-  ["#8b5cf6", "#a78bfa"], // violet
+  ["#8b5cf6", "#ef4444"], // violet
   ["#a16207", "#78716c"], // brown → grey
-  ["#78716c", "#a1a1aa"], // grey
-  ["#e4e4e7", "#ffffff"], // white
+  ["#78716c", "#f97316"], // grey
+  ["#f97316", "#ffffff"], // white
 ];
 
 const SectionHeading = ({ icon, title }) => (
