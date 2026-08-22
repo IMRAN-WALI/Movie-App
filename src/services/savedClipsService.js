@@ -1,7 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as MediaLibrary from "expo-media-library";
 import * as FileSystem from "expo-file-system/legacy";
-import { trim } from "react-native-video-trim";
+
+// --- REMOVED THE CRASHING LIBRARY ---
+// import { trim } from "react-native-video-trim";
 
 const SAVED_CLIPS_KEY = "saved_clips";
 
@@ -54,25 +56,39 @@ export const deleteSavedClip = async (clipId) => {
   }
 };
 
+/**
+ * SAFE REPLACEMENT for trimming.
+ * Since we cannot use react-native-video-trim in Expo Go,
+ * this function currently just copies the file without trimming.
+ *
+ * TO ACTUALLY TRIM IN EXPO GO:
+ * You must install and use '@ffmpeg/ffmpeg' with a Web Worker.
+ */
 export const trimVideoWithFFmpeg = async (inputUri, startTime, endTime) => {
+  console.log(`✂️ Trim requested: ${startTime}s to ${endTime}s`);
+  console.log(
+    `⚠️ Note: Actual video trimming is disabled because "react-native-video-trim" was causing app crashes.`,
+  );
+
   try {
-    const result = await trim(inputUri, {
-      startTime: Math.round(startTime * 1000),
-      endTime: Math.round(endTime * 1000),
-    });
+    // 1. Create a safe directory
+    const clipsDir = `${FileSystem.documentDirectory}clips/`;
+    await FileSystem.makeDirectoryAsync(clipsDir, {
+      intermediates: true,
+    }).catch(() => {});
 
-    const outputPath = result?.outputPath;
-    if (!outputPath) {
-      console.log("⚠️ trim() returned no outputPath, using original video");
-      return inputUri;
-    }
+    // 2. Generate a filename for the "trimmed" video (currently just a copy)
+    const trimmedUri = `${clipsDir}trimmed_${Date.now()}.mp4`;
 
-    console.log("✅ Trim success:", outputPath);
-    return outputPath.startsWith("file://")
-      ? outputPath
-      : `file://${outputPath}`;
+    // 3. Copy the file (No actual trimming happens here to prevent the crash)
+    await FileSystem.copyAsync({ from: inputUri, to: trimmedUri });
+
+    console.log("✅ (Safe mode) Video copied instead of trimmed:", trimmedUri);
+
+    return trimmedUri;
   } catch (error) {
-    console.log("❌ trim() failed, falling back to full video:", error);
+    console.log("❌ Error during safe copy operation:", error);
+    // Fallback to original if everything fails
     return inputUri;
   }
 };

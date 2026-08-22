@@ -325,22 +325,29 @@ const Profile = () => {
               />
             </MenuSection>
 
-            {/* Account */}
             <MenuSection title={t("profile_account")}>
               <MenuItem
                 icon="person-outline"
                 label={t("profile_edit_profile")}
                 onPress={() => router.push("/profile/edit")}
               />
+
               <MenuItem
                 icon="lock-closed-outline"
                 label={t("profile_change_password")}
                 onPress={() => router.push("/auth/change-password")}
               />
+
               <MenuItem
                 icon="language-outline"
                 label={t("profile_app_language")}
                 onPress={() => router.push("/profile/language")}
+              />
+
+              <MenuItem
+                icon="settings-outline"
+                label={t("profile_settings")}
+                onPress={() => router.push("/profile/settings")}
                 isLast
               />
             </MenuSection>

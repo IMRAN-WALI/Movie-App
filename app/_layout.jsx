@@ -75,6 +75,7 @@ export default function Layout() {
         <Stack.Screen name="profile/language" />
         <Stack.Screen name="profile/edit" />
         <Stack.Screen name="movies/player/[id]" />
+        <Stack.Screen name="profile/settings" />
       </Stack>
     </LanguageProvider>
   );

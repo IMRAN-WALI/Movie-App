@@ -231,4 +231,86 @@ export default {
 
   clips_save: "Save to Gallery",
   clips_saved: "Clip saved!",
+
+  // Settings
+  profile_settings: "Settings",
+
+  settings_title: "Settings",
+  settings_subtitle: "Manage your app experience",
+
+  settings_preferences: "Preferences",
+
+  settings_language: "App Language",
+  settings_language_sub: "Choose your preferred language",
+
+  settings_autoplay: "Autoplay Previews",
+  settings_autoplay_sub: "Automatically play movie previews when available",
+
+  settings_storage: "Storage",
+
+  settings_storage_usage: "Storage Usage",
+  settings_manage_downloads: "Manage Downloads",
+  settings_manage_downloads_sub:
+    "View, play, pause, or remove downloaded movies",
+
+  settings_clear_cache: "Clear Cache",
+  settings_clear_cache_sub: "Remove temporary app data",
+
+  settings_account: "Account",
+
+  settings_edit_profile: "Edit Profile",
+  settings_edit_profile_sub: "Update your name, photo, and bio",
+
+  settings_change_password: "Change Password",
+  settings_change_password_sub: "Update your account password",
+
+  settings_delete_account: "Delete Account",
+  settings_delete_account_sub: "Permanently delete your account and data",
+
+  settings_delete_account_warning:
+    "This action is permanent. Your profile, ratings, saved movies, history, and account access may be permanently removed.",
+
+  settings_type_delete: 'Type "DELETE" below to confirm.',
+
+  settings_delete_type_delete:
+    'Please type "DELETE" to confirm account deletion.',
+
+  settings_delete_forever: "Delete Forever",
+
+  settings_about: "About",
+  settings_version: "App Version",
+
+  settings_footer: "Your movie experience, your way.",
+
+  settings_cancel: "Cancel",
+  settings_clear: "Clear",
+  settings_done: "Done",
+  settings_error: "Error",
+
+  settings_calculating: "Calculating...",
+  settings_downloads: "downloads",
+
+  settings_clear_cache_title: "Clear Cache",
+  settings_clear_cache_message:
+    "Temporary app data will be cleared. Your downloaded movies will not be deleted.",
+
+  settings_cache_cleared: "Temporary cache has been cleared.",
+
+  settings_cache_error: "Could not clear the temporary cache.",
+
+  settings_clear_downloads_title: "Clear Downloads",
+
+  settings_clear_downloads_message:
+    "This will permanently remove all downloaded movies from this device.",
+
+  settings_downloads_cleared: "All downloads have been removed.",
+
+  settings_downloads_clear_error: "Could not clear downloads.",
+
+  settings_account_deleted: "Account Deleted",
+
+  settings_account_deleted_message:
+    "Your account has been permanently deleted.",
+
+  settings_delete_error: "Could not delete your account. Please try again.",
 };

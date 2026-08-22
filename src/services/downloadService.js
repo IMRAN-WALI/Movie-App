@@ -7,13 +7,12 @@ const DOWNLOADS_KEY = "downloads";
 // 🔥 APNI REAL IP DAALEIN - jo backend run kar raha hai
 // ============================================================
 
-// ✅ Android Emulator ke liye
-// const API_BASE_URL = "http://10.0.2.2:5000";
-
-// ✅ Real Device - Apni real IP (ipconfig se copy karein)
-const API_BASE_URL = "http://192.168.100.163:5000";  // ⚠️ Apni IP daalein
+// ✅ .env file se IP uthayein (production aur development dono ke liye best hai)
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || "http://10.0.2.2:5000";
 
 console.log("🌐 API_BASE_URL:", API_BASE_URL);
+
+export { API_BASE_URL };  
 
 export const downloadStates = {
   QUEUED: "queued",
@@ -101,15 +100,20 @@ class DownloadManager {
       const fullUrl = `${API_BASE_URL}/api/movies/${movieId}/download`;
       console.log("[DOWNLOAD] URL:", fullUrl);
 
-      // Test connectivity
+      // Test connectivity - pehle check karo backend reachable hai?
       try {
         const testResponse = await fetch(`${API_BASE_URL}/health`, {
           method: 'GET',
           headers: { 'Accept': 'application/json' },
+          timeout: 5000, // 5 second timeout
         });
         console.log("[OK] Backend reachable:", testResponse.status);
       } catch (testError) {
         console.error("[ERROR] Backend NOT reachable:", testError.message);
+        console.error("[FIX] Check:");
+        console.error("  1. Is backend running? (npm start)");
+        console.error("  2. Is IP correct?", API_BASE_URL);
+        console.error("  3. Run 'ipconfig' and update IP in code");
         throw new Error(`Cannot reach backend at ${API_BASE_URL}. Please check your connection.`);
       }
 
